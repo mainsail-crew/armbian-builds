@@ -17,10 +17,13 @@ jobs:
     name: Build Image for Radxa Zero
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Checkout Armbian build
         uses: actions/checkout@v2
         with:
           repository: 'armbian/build'
 
       - name: Build armbian
-        run: ./compile.sh BOARD=radxa-zero BRANCH=current RELEASE=bullseye BUILD_MINIMAL=yes BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
+        run: ./compile.sh docker BOARD=radxa-zero BRANCH=current RELEASE=bullseye BUILD_MINIMAL=yes BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
