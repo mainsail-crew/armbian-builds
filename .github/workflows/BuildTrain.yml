@@ -4,7 +4,7 @@ on:
     branches:
       - "**"
     paths:
-      - ".github/workflows/TestWorkflow.yml"
+      - ".github/workflows/BuildTrain.yml"
   workflow_dispatch:
 
 # Allow to stop obsolete workflows
