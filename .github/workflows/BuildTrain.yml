@@ -1,0 +1,29 @@
+name: Build Train
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/TestWorkflow.yml"
+  workflow_dispatch:
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  buildradaxzero:
+    name: Build Image for Radxa Zero
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Checkout Armbian build
+        uses: actions/checkout@v2
+        with:
+          repository: 'armbian/build'
+
+      - name: Build armbian
+        run: ./compile.sh docker BOARD=radxa-zero BRANCH=current RELEASE=bullseye BUILD_MINIMAL=yes BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
