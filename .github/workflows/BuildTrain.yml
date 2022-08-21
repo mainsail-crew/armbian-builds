@@ -23,4 +23,4 @@ jobs:
           repository: 'armbian/build'
 
       - name: Build armbian
-        run: ./compile.sh docker BOARD=radxa-zero BRANCH=current RELEASE=bullseye BUILD_MINIMAL=yes BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
+        run: ./compile.sh BOARD=radxa-zero BRANCH=current RELEASE=bullseye BUILD_MINIMAL=yes BUILD_DESKTOP=no KERNEL_ONLY=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
