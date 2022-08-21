@@ -19,11 +19,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Get time
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
           format: 'YYYYMMDD-HHmm'
+
       - name: Create empty release
         id: release
         uses: softprops/action-gh-release@v1
@@ -42,7 +44,7 @@ jobs:
     needs: prepare_release
     strategy:
       matrix:
-        BOARD: [ radxa-zero ]
+        BOARD: [ radxa-zero, orangepizero ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

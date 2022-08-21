@@ -2,11 +2,15 @@ name: 'Armbian/build'
 description: 'Armbian Linux build framework from amazingfate/armbian-compile-action'
 inputs:
   board:
+    description: 'Armbian board name'
     required: true
   release-id:
+    description: 'ID from github release'
     required: false
   github-token:
+    description: 'Token to upload the Image to the release'
     required: false
+
 runs:
   using: "composite"
   steps:
@@ -17,13 +21,15 @@ runs:
         swap-size-mb: 1024
         remove-dotnet: 'true'
         remove-android: 'true'
-    - name: Checkout
+
+    - name: Checkout armbian/build
       uses: actions/checkout@v3
       with:
         repository: armbian/build
         ref: master
         path: build
-    - name: Build
+
+    - name: Build Image
       shell: bash
       run: |
         cd ./build
@@ -38,8 +44,10 @@ runs:
         BUILD_DESKTOP=no \
         KERNEL_ONLY=no \
         KERNEL_CONFIGURE=no \
+        BOOTFS_TYPE=fat \
         COMPRESS_OUTPUTIMAGE=sha,gpg,xz
-    - name: Upload
+
+    - name: Upload Image to Release
       if: inputs.release-id != '' && inputs.github-token != ''
       uses: xresloader/upload-to-github-release@v1
       env:
@@ -48,6 +56,7 @@ runs:
         release_id: ${{ inputs.release-id }}
         file: ./build/output/images/*
         draft: false
+
     - name: Rollback release
       if: failure() && inputs.release-id != '' && inputs.github-token != ''
       uses: author/action-rollback@stable
