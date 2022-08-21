@@ -15,6 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/checkout@v2
+        with:
+          repository: 'armbian/build'
+
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
@@ -27,7 +31,9 @@ jobs:
         run: vagrant --version
 
       - name: Run vagrant up
-        run: vagrant up
+        run: |
+          cd config/templates
+          vagrant up
 
       - name: ssh into box after boot
         run: vagrant ssh -c "echo 'hello world!'"
