@@ -1,0 +1,57 @@
+name: 'Armbian/build'
+description: 'Armbian Linux build framework from amazingfate/armbian-compile-action'
+inputs:
+  board:
+    required: true
+  release-id:
+    required: false
+  github-token:
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Get more space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 30720
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
+        remove-android: 'true'
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        repository: armbian/build
+        ref: master
+        path: build
+    - name: Build
+      shell: bash
+      run: |
+        cd ./build
+        touch .ignore_changes
+        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
+        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
+        ./compile.sh docker \
+        BOARD=${{ inputs.board }} \
+        BRANCH=current \
+        RELEASE=bullseye \
+        BUILD_MINIMAL=yes \
+        BUILD_DESKTOP=no \
+        KERNEL_ONLY=no \
+        KERNEL_CONFIGURE=no \
+        COMPRESS_OUTPUTIMAGE=sha,gpg,xz
+    - name: Upload
+      if: inputs.release-id != '' && inputs.github-token != ''
+      uses: xresloader/upload-to-github-release@v1
+      env:
+          GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        release_id: ${{ inputs.release-id }}
+        file: ./build/output/images/*
+        draft: false
+    - name: Rollback release
+      if: failure() && inputs.release-id != '' && inputs.github-token != ''
+      uses: author/action-rollback@stable
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        release_id: ${{ inputs.release-id }}
