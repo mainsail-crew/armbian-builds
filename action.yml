@@ -38,7 +38,7 @@ runs:
         docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
         ./compile.sh docker \
         BOARD=${{ inputs.board }} \
-        BRANCH=current \
+        BRANCH=edge \
         RELEASE=bullseye \
         BUILD_MINIMAL=yes \
         BUILD_DESKTOP=no \
