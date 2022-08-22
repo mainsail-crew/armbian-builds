@@ -5,7 +5,7 @@ on:
       - "**"
     paths:
       - ".github/workflows/BuildTrainSelfHosted.yml"
-      - "action.yml"
+      - ".github/workflows/_build.yml"
   workflow_dispatch:
 
 # Allow to stop obsolete workflows
