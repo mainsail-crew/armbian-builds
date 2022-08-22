@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build & Upload Armbian image
-        uses: ./.github/workflows/.github/workflows/_build.yml
+        uses: ./.github/workflows/_build.yml
         with:
           board: ${{ matrix.BOARD }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
