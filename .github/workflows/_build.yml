@@ -9,9 +9,6 @@ on:
       release-id:
         description: 'ID from github release'
         required: false
-      github-token:
-        description: 'Token to upload the Image to the release'
-        required: false
 
 jobs:
   build_armbian:
