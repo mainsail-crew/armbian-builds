@@ -33,10 +33,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        touch .ignore_changes
-        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
-        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
-        ./compile.sh docker \
+        ./compile.sh \
         BOARD=${{ inputs.board }} \
         BRANCH=edge \
         RELEASE=bullseye \
