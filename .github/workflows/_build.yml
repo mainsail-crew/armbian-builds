@@ -10,12 +10,14 @@ on:
       release-id:
         description: 'ID from github release'
         required: false
+    secrets:
       github-token:
         description: 'Token to upload the Image to the release'
         required: false
 
 jobs:
-  build:
+  build_armbian:
+    name: Build Armbian
     runs-on: self-hosted
     steps:
       - name: Checkout armbian/build
@@ -54,6 +56,6 @@ jobs:
         if: failure() && inputs.release-id != '' && inputs.github-token != ''
         uses: author/action-rollback@stable
         env:
-          GITHUB_TOKEN: ${{ inputs.github-token }}
+          GITHUB_TOKEN: ${{ secrets.github-token }}
         with:
           release_id: ${{ inputs.release-id }}
