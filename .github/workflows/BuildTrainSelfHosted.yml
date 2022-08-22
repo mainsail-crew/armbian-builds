@@ -50,8 +50,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Upload Armbian image
-        uses: meteyou/armbian-builds@test-self-hosted
+      - name: Build & Upload Armbian image
+        uses: ./.github/workflows/_build
         with:
           board: ${{ matrix.BOARD }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
