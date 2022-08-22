@@ -41,18 +41,12 @@ jobs:
 
   build:
     name: Build Images
-    runs-on: ubuntu-latest
     needs: prepare_release
     strategy:
       matrix:
         BOARD: [ radxa-zero, orangepizero ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build & Upload Armbian image
-        uses: meteyou/armbian-builds/.github/workflows/_build.yml@test-self-hosted
-        with:
-          board: ${{ matrix.BOARD }}
-          release-id: ${{ needs.prepare_release.outputs.release_id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+    uses: meteyou/armbian-builds/.github/workflows/_build.yml@test-self-hosted
+    with:
+      board: ${{ matrix.BOARD }}
+      release-id: ${{ needs.prepare_release.outputs.release_id }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
