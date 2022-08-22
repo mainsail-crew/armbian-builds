@@ -44,7 +44,7 @@ jobs:
     needs: prepare_release
     strategy:
       matrix:
-        BOARD: [ radxa-zero ]
+        BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero2, rpi4b ]
     uses: meteyou/armbian-builds/.github/workflows/_build.yml@test-self-hosted
     with:
       board: ${{ matrix.BOARD }}
