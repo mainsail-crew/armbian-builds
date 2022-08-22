@@ -49,4 +49,3 @@ jobs:
     with:
       board: ${{ matrix.BOARD }}
       release-id: ${{ needs.prepare_release.outputs.release_id }}
-      github-token: ${{ secrets.GITHUB_TOKEN }}
