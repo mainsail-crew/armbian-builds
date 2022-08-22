@@ -6,9 +6,11 @@ on:
       board:
         description: 'Armbian board name'
         required: true
+        type: string
       release-id:
         description: 'ID from github release'
         required: false
+        type: string
 
 jobs:
   build_armbian:
