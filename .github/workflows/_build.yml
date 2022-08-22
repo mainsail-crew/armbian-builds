@@ -30,7 +30,7 @@ jobs:
           cd ./build
           ./compile.sh \
           BOARD=${{ inputs.board }} \
-          BRANCH=edge \
+          BRANCH=current \
           RELEASE=bullseye \
           BUILD_MINIMAL=yes \
           BUILD_DESKTOP=no \
