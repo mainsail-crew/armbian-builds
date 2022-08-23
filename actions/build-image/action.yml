@@ -44,7 +44,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-#       ./compile.sh BOARD=${{ inputs.board }}
+        ./compile.sh BOARD=${{ inputs.board }}
 
     - name: Upload Image to Release
       if: inputs.release-id != '' && inputs.github-token != ''
