@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/BuildTrainSelfHosted.yml"
       - ".github/workflows/_build.yml"
+      - "actions/build-image/action.yml"
   workflow_dispatch:
 
 # Allow to stop obsolete workflows
