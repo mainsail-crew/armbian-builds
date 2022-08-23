@@ -11,6 +11,9 @@ on:
         description: 'ID from github release'
         required: false
         type: string
+    secrets:
+      github-taken:
+        required: true
 
 jobs:
   build_armbian:
@@ -45,20 +48,20 @@ jobs:
         shell: bash
         run: |
           cd ./build
-          ./compile.sh BOARD=${{ inputs.board }}
+#          ./compile.sh BOARD=${{ inputs.board }}
 
       - name: Upload Image to Release
-        if: inputs.release-id != '' && inputs.github-token != ''
+        if: inputs.release-id != '' && secrets.github-token != ''
         uses: xresloader/upload-to-github-release@v1
         env:
-          GITHUB_TOKEN: ${{ inputs.github-token }}
+          GITHUB_TOKEN: ${{ secrets.github-token }}
         with:
           release_id: ${{ inputs.release-id }}
           file: ./build/output/images/*
           draft: false
 
       - name: Rollback release
-        if: failure() && inputs.release-id != '' && inputs.github-token != ''
+        if: failure() && inputs.release-id != '' && secrets.github-token != ''
         uses: author/action-rollback@stable
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }}
