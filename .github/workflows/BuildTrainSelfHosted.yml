@@ -46,7 +46,6 @@ jobs:
       matrix:
         BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero2, rpi4b ]
     uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
-    runs-on: self-hosted
     with:
       board: ${{ matrix.BOARD }}
       release-id: ${{ needs.prepare_release.outputs.release_id }}
