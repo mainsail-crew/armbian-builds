@@ -1,20 +1,16 @@
 name: 'Armbian/build'
-author: "Stefan Dej"
+author: 'Stefan Dej'
+description: 'Build armbian images'
 inputs:
   board:
     description: 'Armbian board name'
     required: true
-    type: string
   release-id:
     description: 'ID from github release'
     required: false
-    type: string
-secrets:
-  github-taken:
-    required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Runner prepare
       uses: meteyou/armbian-builds/actions/runner-prepare@test-self-hosted
@@ -35,6 +31,7 @@ runs:
         path: scripts
 
     - name: Copy templates
+      shell: bash
       run: |
         mkdir -p build/userpatches
         cp scripts/configs/* build/userpatches/
@@ -43,7 +40,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-#          ./compile.sh BOARD=${{ inputs.board }}
+#       ./compile.sh BOARD=${{ inputs.board }}
 
     - name: Upload Image to Release
       if: inputs.release-id != '' && secrets.github-token != ''
