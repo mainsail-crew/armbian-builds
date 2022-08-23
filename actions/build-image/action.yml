@@ -43,19 +43,19 @@ runs:
 #       ./compile.sh BOARD=${{ inputs.board }}
 
     - name: Upload Image to Release
-      if: inputs.release-id != '' && secrets.github-token != ''
+      if: inputs.release-id != ''
       uses: xresloader/upload-to-github-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.github-token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_id: ${{ inputs.release-id }}
         file: ./build/output/images/*
         draft: false
 
     - name: Rollback release
-      if: failure() && inputs.release-id != '' && secrets.github-token != ''
+      if: failure() && inputs.release-id != ''
       uses: author/action-rollback@stable
       env:
-        GITHUB_TOKEN: ${{ secrets.github-token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_id: ${{ inputs.release-id }}
