@@ -44,6 +44,7 @@ jobs:
     name: Build Images
     needs: prepare_release
     strategy:
+      fail-fast: false
       matrix:
         BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero2, rpi4b ]
     runs-on: self-hosted
