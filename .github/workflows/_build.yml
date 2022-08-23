@@ -39,7 +39,7 @@ jobs:
       - name: Copy templates
         run: |
           mkdir -p build/userpatches
-          sudo cp scripts/configs/* build/userpatches/
+          cp scripts/configs/* build/userpatches/
 
       - name: Build Image
         shell: bash
