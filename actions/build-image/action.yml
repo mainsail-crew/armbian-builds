@@ -8,6 +8,10 @@ inputs:
   release-id:
     description: 'ID from github release'
     required: false
+  github-token:
+    description: 'github token'
+    required: true
+
 
 runs:
   using: 'composite'
@@ -43,19 +47,19 @@ runs:
 #       ./compile.sh BOARD=${{ inputs.board }}
 
     - name: Upload Image to Release
-      if: inputs.release-id != ''
+      if: inputs.release-id != '' && inputs.github-token != ''
       uses: xresloader/upload-to-github-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
       with:
         release_id: ${{ inputs.release-id }}
         file: ./build/output/images/*
         draft: false
 
     - name: Rollback release
-      if: failure() && inputs.release-id != ''
+      if: failure() && inputs.release-id != '' && inputs.github-token != ''
       uses: author/action-rollback@stable
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
       with:
         release_id: ${{ inputs.release-id }}
