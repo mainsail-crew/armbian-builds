@@ -1,0 +1,62 @@
+name: "Runner prepare"
+author: "Stefan Dej"
+description: "Cleaning self hosted runners - Modified version from armbian/actions/runner-prepare/action.yml"
+runs:
+  using: "composite"
+  steps:
+    - name: Kill processes
+      shell: bash
+      run: |
+        # make sure no temporally dirs are mounted from previous runs
+        while :
+        do
+           sudo pkill compile.sh || true
+           sudo pkill arm-binfmt-P || true
+           sudo pkill aarch64-binfmt-P || true
+           sudo pkill pixz || true
+           df | grep ".tmp" | awk '{print $6}' | xargs sudo umount 2>/dev/null || true
+           [[ "$(df | grep "/.tmp" | wc -l)" -eq 0 ]] && sudo rm -rf build/.tmp && break
+           sleep 5
+        done
+
+    - name: Clean apt cacher
+      shell: bash
+      run: |
+        sudo service apt-cacher-ng stop || true
+        sudo rm -rf /var/cache/apt-cacher-ng/ || true
+        sudo mkdir -p /var/cache/apt-cacher-ng/{headers,import,packages,private,temp} || true
+        sudo chown apt-cacher-ng:apt-cacher-ng -R /var/cache/apt-cacher-ng || true
+        sudo service apt-cacher-ng start || true
+        sudo apt-get -y purge linux-firmware libllvm13 snapd libllvm11 libllvm13 gcc-10 || true
+
+    - name: Clean temporally folders
+      shell: bash
+      run: |
+        # fix docker permission
+        sudo chmod 666 /var/run/docker.sock || true
+        
+        # purge docker volumes to save some space
+        if [[ $(df -hT | grep /$ | awk '{print $(NF-1)}' | sed 's/%//') -gt 90 ]]; then
+        sudo docker volume rm $(sudo docker volume ls -q) 2>/dev/null || true
+        fi
+        
+        # clean ssh key folder
+        [[ -f "$HOME/.ssh/known_hosts" ]] && sudo rm "$HOME/.ssh/known_hosts" || true
+        
+        # umount all our mounts
+        WORKSPACE=$(echo ${{ github.workspace }} | rev | cut -d"/" -f3- | rev)
+        sudo mount | grep $WORKSPACE | cut -d" " -f3 || true
+        sudo mount | grep $WORKSPACE | cut -d" " -f3 | xargs sudo umount || true
+
+    - name: Clean runner
+      shell: bash
+      run: |
+        # Removing all other projects, except build, there do cleaning only
+        WORKSPACE=$(echo ${{ github.workspace }} | rev | cut -d"/" -f3- | rev)
+        sudo find $WORKSPACE -mindepth 1 -maxdepth 1 -type d ! -name "build" ! -name "_*" ! -name "$(echo ${{ github.workspace }} | rev | cut -d"/" -f2 | rev)" -exec sudo rm -rf {} + || true
+        sudo rm -rf $WORKSPACE/build/build/build/cache/ccache $WORKSPACE/build/build/build/cache/rootfs || true
+        sudo rm -rf $WORKSPACE/build/output/debs/* $WORKSPACE/build/output/debs-beta/* /var/log/journal || true
+        sudo rm -rf $WORKSPACE/build/cache/hash/* $WORKSPACE/build/cache/hash-beta/* $WORKSPACE/build/output/images/* || true
+        [[ -d $WORKSPACE/build/ ]] && sudo chown -R $USER:$USER $WORKSPACE/build/. || true
+        # debug
+        sudo df

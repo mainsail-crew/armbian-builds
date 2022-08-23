@@ -17,27 +17,35 @@ jobs:
     name: Build Armbian
     runs-on: self-hosted
     steps:
+
+      - name: Runner prepare
+        uses: meteyou/armbian-builds/actions/runner-prepare@test-self-hosted
+
       - name: Checkout armbian/build
         uses: actions/checkout@v3
         with:
+          fetch-depth: 1
           repository: armbian/build
           ref: master
           path: build
+
+      - name: Checkout meteyou/armbian-builds
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          repository: meteyou/armbian-builds
+          path: scripts
+
+      - name: Copy templates
+        run: |
+          mkdir -p build/userpatches
+          sudo cp scripts/configs/* build/userpatches/
 
       - name: Build Image
         shell: bash
         run: |
           cd ./build
-          ./compile.sh \
-          BOARD=${{ inputs.board }} \
-          BRANCH=current \
-          RELEASE=bullseye \
-          BUILD_MINIMAL=yes \
-          BUILD_DESKTOP=no \
-          KERNEL_ONLY=no \
-          KERNEL_CONFIGURE=no \
-          BOOTFS_TYPE=fat \
-          COMPRESS_OUTPUTIMAGE=sha,gpg,xz
+          ./compile.sh BOARD=${{ inputs.board }}
 
       - name: Upload Image to Release
         if: inputs.release-id != '' && inputs.github-token != ''
