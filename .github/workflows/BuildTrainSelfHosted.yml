@@ -5,7 +5,6 @@ on:
       - "**"
     paths:
       - ".github/workflows/BuildTrainSelfHosted.yml"
-      - ".github/workflows/_build.yml"
       - "actions/build-image/action.yml"
       - "configs/config-default.conf"
   workflow_dispatch:
