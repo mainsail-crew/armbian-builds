@@ -40,21 +40,29 @@ runs:
         mkdir -p build/userpatches
         cp scripts/configs/* build/userpatches/
 
+    - name: Pull Docker image
+      shell: bash
+      run: |
+        sudo apt-get -yy install docker containerd docker.io
+        sudo docker kill $(sudo docker ps -q) 2>/dev/null || true
+        sudo docker image rm $(sudo docker images | grep -v $(cat build/VERSION | sed 's/trunk.*/trunk/')"-$(dpkg --print-architecture)" | grep armbian | awk 'NR>1 {print $3}') 2> /dev/null || true 
+        sudo docker pull ghcr.io/armbian/build:$(cat build/VERSION  | cut -d"." -f1-2)"-$(dpkg --print-architecture)"
+
     - name: Build Image
       shell: bash
       run: |
         cd ./build
-        ./compile.sh BOARD=${{ inputs.board }}
+#        ./compile.sh BOARD=${{ inputs.board }}
 
-    - name: Upload Image to Release
-      if: inputs.release-id != '' && inputs.github-token != ''
-      uses: xresloader/upload-to-github-release@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        release_id: ${{ inputs.release-id }}
-        file: ./build/output/images/*
-        draft: false
+#    - name: Upload Image to Release
+#      if: inputs.release-id != '' && inputs.github-token != ''
+#      uses: xresloader/upload-to-github-release@v1
+#      env:
+#        GITHUB_TOKEN: ${{ inputs.github-token }}
+#      with:
+#        release_id: ${{ inputs.release-id }}
+#        file: ./build/output/images/*
+#        draft: false
 
 #    - name: Rollback release
 #      if: failure() && inputs.release-id != '' && inputs.github-token != ''
