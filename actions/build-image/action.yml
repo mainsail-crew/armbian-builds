@@ -40,22 +40,23 @@ runs:
         mkdir -p build/userpatches
         cp scripts/configs/* build/userpatches/
 
-    - name: Pull Docker image
-      shell: bash
-      run: |
-        [[ -z $(command -v docker) ]] && sudo apt-get -yy install docker containerd docker.io
-        sudo docker kill $(sudo docker ps -q) 2>/dev/null || true
-        sudo docker image rm $(sudo docker images | grep -v $(cat build/VERSION | sed 's/trunk.*/trunk/')"-$(dpkg --print-architecture)" | grep armbian | awk 'NR>1 {print $3}') 2> /dev/null || true 
-        sudo docker pull ghcr.io/armbian/build:$(cat build/VERSION  | cut -d"." -f1-2)"-$(dpkg --print-architecture)"
+#    - name: Pull Docker image
+#      shell: bash
+#      run: |
+#        [[ -z $(command -v docker) ]] && sudo apt-get -yy install docker containerd docker.io
+#        sudo docker kill $(sudo docker ps -q) 2>/dev/null || true
+#        sudo docker image rm $(sudo docker images | grep -v $(cat build/VERSION | sed 's/trunk.*/trunk/')"-$(dpkg --print-architecture)" | grep armbian | awk 'NR>1 {print $3}') 2> /dev/null || true
+#        sudo docker pull ghcr.io/armbian/build:$(cat build/VERSION  | cut -d"." -f1-2)"-$(dpkg --print-architecture)"
 
     - name: Build Image
       shell: bash
       run: |
         cd ./build
-        touch .ignore_changes
-        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
-        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
-        ./compile.sh docker BOARD=${{ inputs.board }}
+        ./compile.sh BOARD=${{ inputs.board }}
+#        touch .ignore_changes
+#        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
+#        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
+#        ./compile.sh docker BOARD=${{ inputs.board }}
 
 #    - name: Upload Image to Release
 #      if: inputs.release-id != '' && inputs.github-token != ''
