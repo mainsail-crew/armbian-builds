@@ -58,15 +58,15 @@ runs:
 #        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
 #        ./compile.sh docker BOARD=${{ inputs.board }}
 
-#    - name: Upload Image to Release
-#      if: inputs.release-id != '' && inputs.github-token != ''
-#      uses: xresloader/upload-to-github-release@v1
-#      env:
-#        GITHUB_TOKEN: ${{ inputs.github-token }}
-#      with:
-#        release_id: ${{ inputs.release-id }}
-#        file: ./build/output/images/*
-#        draft: false
+    - name: Upload Image to Release
+      if: inputs.release-id != '' && inputs.github-token != ''
+      uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        release_id: ${{ inputs.release-id }}
+        file: ./build/output/images/*
+        draft: false
 
 #    - name: Rollback release
 #      if: failure() && inputs.release-id != '' && inputs.github-token != ''
