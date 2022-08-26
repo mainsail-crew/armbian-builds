@@ -27,7 +27,6 @@ runs:
 #        sudo mkdir -p /var/cache/apt-cacher-ng/{headers,import,packages,private,temp} || true
 #        sudo chown apt-cacher-ng:apt-cacher-ng -R /var/cache/apt-cacher-ng || true
 #        sudo service apt-cacher-ng start || true
-        sudo apt-get -y purge linux-firmware libllvm13 snapd libllvm11 libllvm13 gcc-10 || true
 
     - name: Clean temporally folders
       shell: bash
