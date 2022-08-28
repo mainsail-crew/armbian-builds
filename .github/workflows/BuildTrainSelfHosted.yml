@@ -48,7 +48,7 @@ jobs:
       fail-fast: false
       matrix:
 #        BOARD: [ radxa-zero, orangepizero ]
-        BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero, orangepizero2, rpi4b ]
+        BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero, orangepizero2 ]
     runs-on: fast-runner
     steps:
       - name: Build image
