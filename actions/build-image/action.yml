@@ -58,6 +58,13 @@ runs:
 #        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
 #        ./compile.sh docker BOARD=${{ inputs.board }}
 
+    - name: Fix userrights
+      shell: bash
+      run: |
+        WORKSPACE=$(echo ${{ github.workspace }} | rev | cut -d"/" -f3- | rev)
+        sudo chown -R $USER:$USER $WORKSPACE/build/. || true
+        sudo df
+
     - name: Upload Image to Release
       if: inputs.release-id != '' && inputs.github-token != ''
       uses: xresloader/upload-to-github-release@v1
