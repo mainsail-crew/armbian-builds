@@ -22,12 +22,11 @@ runs:
     - name: Clean apt cacher
       shell: bash
       run: |
-        sudo service apt-cacher-ng stop || true
-        sudo rm -rf /var/cache/apt-cacher-ng/ || true
-        sudo mkdir -p /var/cache/apt-cacher-ng/{headers,import,packages,private,temp} || true
-        sudo chown apt-cacher-ng:apt-cacher-ng -R /var/cache/apt-cacher-ng || true
-        sudo service apt-cacher-ng start || true
-        sudo apt-get -y purge linux-firmware libllvm13 snapd libllvm11 libllvm13 gcc-10 || true
+#        sudo service apt-cacher-ng stop || true
+#        sudo rm -rf /var/cache/apt-cacher-ng/ || true
+#        sudo mkdir -p /var/cache/apt-cacher-ng/{headers,import,packages,private,temp} || true
+#        sudo chown apt-cacher-ng:apt-cacher-ng -R /var/cache/apt-cacher-ng || true
+#        sudo service apt-cacher-ng start || true
 
     - name: Clean temporally folders
       shell: bash
@@ -49,11 +48,11 @@ runs:
       shell: bash
       run: |
         # Removing all other projects, except build, there do cleaning only
-        WORKSPACE=$(echo ${{ github.workspace }} | rev | cut -d"/" -f3- | rev)
+        WORKSPACE=$(echo ${{ github.workspace }})
         #sudo find $WORKSPACE -mindepth 1 -maxdepth 1 -type d ! -name "build" ! -name "_*" ! -name "$(echo ${{ github.workspace }} | rev | cut -d"/" -f2 | rev)" -exec sudo rm -rf {} + || true
         # sudo rm -rf $WORKSPACE/build/build/build/cache/ccache $WORKSPACE/build/build/build/cache/rootfs || true
         # sudo rm -rf $WORKSPACE/build/output/debs/* $WORKSPACE/build/output/debs-beta/* /var/log/journal || true
         # sudo rm -rf $WORKSPACE/build/cache/hash/* $WORKSPACE/build/cache/hash-beta/* $WORKSPACE/build/output/images/* || true
-        sudo chown -R $USER:$USER $WORKSPACE/build/. || true
+        sudo chown -R $USER:$USER $WORKSPACE/build || true
         # debug
         sudo df
