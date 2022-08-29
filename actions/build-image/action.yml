@@ -61,7 +61,7 @@ runs:
     - name: Fix userrights
       shell: bash
       run: |
-        WORKSPACE=$(echo ${{ github.workspace }} | rev | cut -d"/" -f3- | rev)
+        WORKSPACE=$(echo ${{ github.workspace }})
         sudo chown -R $USER:$USER $WORKSPACE/build/. || true
         sudo df
 
