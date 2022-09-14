@@ -69,11 +69,12 @@ jobs:
   build:
     name: Build Images
     needs: prepare_release
+    runs-on: fast-runner
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup.outputs.matrix) }}
-    runs-on: fast-runner
+#        configfile: ${{ fromJson(needs.setup.outputs.matrix) }}
+        configfile: ["radxa-zero","orangepi4-lts","orangepi3-lts"]
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
