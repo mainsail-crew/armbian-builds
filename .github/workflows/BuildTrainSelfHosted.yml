@@ -79,7 +79,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ needs.setup.outputs.matrix }}
+      matrix:
+        configfile: ${{ needs.setup.outputs.configfiles }}
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
