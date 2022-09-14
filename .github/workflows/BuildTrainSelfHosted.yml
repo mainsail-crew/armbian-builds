@@ -72,7 +72,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        FILE: ${{ fromJson(needs.setup.outputs.matrix) }}
+        FILE: ${{ needs.setup.outputs.matrix }}
     runs-on: fast-runner
     steps:
       - name: Build image
