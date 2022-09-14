@@ -28,7 +28,9 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          echo "::set-output name=configfiles::$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')"
+          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
+          echo $JSON
+          echo "::set-output name=configfiles::${JSON}"
 
   prepare_release:
     name: Create Release
