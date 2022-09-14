@@ -20,7 +20,7 @@ jobs:
     name: Create Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -29,7 +29,7 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=matrix::${JSON}"
+          echo "::set-output name=configfiles::${JSON}"
 
   prepare_release:
     name: Create Release
@@ -63,11 +63,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ${{ fromJson(needs.setup.outputs.matrix) }}
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
         with:
-          configfile: ${{ matrix.board }}
+          configfile: ${{ matrix.configfile }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
