@@ -2,7 +2,7 @@ name: 'Armbian/build'
 author: 'Stefan Dej'
 description: 'Build armbian images'
 inputs:
-  file:
+  configfile:
     description: 'Config file name'
     required: true
   release-id:
