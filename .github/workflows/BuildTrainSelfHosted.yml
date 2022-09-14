@@ -19,8 +19,6 @@ jobs:
   setup:
     name: Create Matrix
     runs-on: ubuntu-latest
-    outputs:
-      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,13 +28,29 @@ jobs:
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "::set-output name=configfiles::${JSON}"
+    outputs:
+      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
 
   prepare_release:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Checkout armbian/build
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          repository: armbian/build
+          path: armbian-build
+
+      - name: Get armbian version
+        id: armbian-version
+        run: |
+          VERSION=$(cat ./armbian-build/VERSION)
+          echo "::set-output name=version::${VERSION}"
+          
 
       - name: Get time
         id: time
@@ -48,6 +62,7 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
+          name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
           body_path: README.md
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,7 +74,7 @@ jobs:
   build:
     name: Build Images
     needs: [setup, prepare_release]
-    runs-on: ubuntu-latest
+    runs-on: fast-runner
     strategy:
       fail-fast: false
       matrix:
