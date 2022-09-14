@@ -99,6 +99,15 @@ jobs:
         with:
           id: ${{ needs.release.outputs.id }}
 
+  test:
+    name: Cleanup BuildTrain
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: output
+        run: |
+          echo ${{ needs.release.outputs.id }}
+
   cleanup:
     name: Cleanup BuildTrain
     needs: build
