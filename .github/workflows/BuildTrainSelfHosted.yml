@@ -20,7 +20,6 @@ jobs:
     name: Create Matrix
     runs-on: ubuntu-latest
     outputs:
-      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
@@ -29,11 +28,6 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo $JSON
-          echo $(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##')
-          echo "::set-output name=configfiles::${JSON}"
-          
           cd ${{ github.workspace }}/configs
           echo "::set-output name=matrix::$(ls * | jq -R -s -c 'split("\n")[:-1]')"
 
@@ -62,17 +56,6 @@ jobs:
           draft: false
     outputs:
       release_id: ${{ steps.release.outputs.id }}
-
-  test_json:
-    name: Test output
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: output
-        run: |
-          echo ${{ needs.setup.outputs.configfiles }}
-          echo ${{ needs.setup.outputs.matrix }}
-          echo ${{ fromJson(needs.setup.outputs.matrix) }}
 
   build:
     name: Build Images
