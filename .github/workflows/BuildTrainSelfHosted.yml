@@ -86,6 +86,6 @@ jobs:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
         with:
-          configfile: ${{ matrix.configfile }}
+          configfile: ${{ matrix.board }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
