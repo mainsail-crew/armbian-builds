@@ -89,7 +89,7 @@ jobs:
 
   finish:
     name: Finish BuildTrain
-    needs: build
+    needs: [release, build]
     runs-on: ubuntu-latest
     steps:
       - name: Publish Release
@@ -110,7 +110,7 @@ jobs:
 
   cleanup:
     name: Cleanup BuildTrain
-    needs: build
+    needs: [release, build]
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
