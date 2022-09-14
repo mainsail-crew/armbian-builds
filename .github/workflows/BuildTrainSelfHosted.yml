@@ -31,11 +31,11 @@ jobs:
     outputs:
       configfiles: ${{ steps.set-matrix.outputs.configfiles }}
 
-  prepare_release:
+  release:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      release_id: ${{ steps.release.outputs.id }}
+      id: ${{ steps.release.outputs.id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -84,7 +84,7 @@ jobs:
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
         with:
           configfile: ${{ matrix.configfile }}
-          release-id: ${{ needs.prepare_release.outputs.release_id }}
+          release-id: ${{ needs.release.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   finish:
@@ -97,7 +97,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          id: ${{ needs.prepare_release.outputs.release_id }}
+          id: ${{ needs.release.outputs.id }}
 
   cleanup:
     name: Cleanup BuildTrain
@@ -107,12 +107,12 @@ jobs:
     steps:
       - name: output
         run: |
-          echo ${{ needs.prepare_release.outputs.release_id }}
+          echo ${{ needs.release.outputs.id }}
 
       - name: Rollback Release
         uses: author/action-rollback@stable
         with:
-          release_id: ${{ needs.prepare_release.outputs.release_id }}
+          release_id: ${{ needs.release.outputs.id }}
           delete_orphan_tag: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
