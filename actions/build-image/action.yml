@@ -2,8 +2,8 @@ name: 'Armbian/build'
 author: 'Stefan Dej'
 description: 'Build armbian images'
 inputs:
-  board:
-    description: 'Armbian board name'
+  config:
+    description: 'Config file name'
     required: true
   release-id:
     description: 'ID from github release'
@@ -32,31 +32,29 @@ runs:
       with:
         fetch-depth: 1
         repository: meteyou/armbian-builds
-        path: scripts
+        path: own-configs
 
-    - name: Copy templates
-      shell: bash
-      run: |
-        mkdir -p build/userpatches
-        cp scripts/configs/* build/userpatches/
-
-#    - name: Pull Docker image
+#    - name: Copy templates
 #      shell: bash
 #      run: |
-#        [[ -z $(command -v docker) ]] && sudo apt-get -yy install docker containerd docker.io
-#        sudo docker kill $(sudo docker ps -q) 2>/dev/null || true
-#        sudo docker image rm $(sudo docker images | grep -v $(cat build/VERSION | sed 's/trunk.*/trunk/')"-$(dpkg --print-architecture)" | grep armbian | awk 'NR>1 {print $3}') 2> /dev/null || true
-#        sudo docker pull ghcr.io/armbian/build:$(cat build/VERSION  | cut -d"." -f1-2)"-$(dpkg --print-architecture)"
+#        mkdir -p build/userpatches
+#        cp scripts/configs/* build/userpatches/
 
-    - name: Build Image
+    - name: Read board config
+      id: config
       shell: bash
       run: |
-        cd ./build
-        ./compile.sh BOARD=${{ inputs.board }}
-#        touch .ignore_changes
-#        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
-#        docker_tag=$(cat VERSION|cut -d "-" -f1) && docker_tag_in_repo=${docker_tag:0:5} && docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 && docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
-#        ./compile.sh docker BOARD=${{ inputs.board }}
+        source ./own-configs/configs/config-default.conf
+        source ./own-configs/configs/board-${{ inputs.config }}.conf
+        
+        echo $BOARD
+
+#    - name: Build Image
+#      shell: bash
+#      run: |
+#        cd ./build
+#       ./compile.sh BOARD=${{ inputs.board }}
+
 
     - name: Fix userrights
       shell: bash
@@ -65,20 +63,12 @@ runs:
         sudo chown -R $USER:$USER $WORKSPACE/build/. || true
         sudo df
 
-    - name: Upload Image to Release
-      if: inputs.release-id != '' && inputs.github-token != ''
-      uses: xresloader/upload-to-github-release@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        release_id: ${{ inputs.release-id }}
-        file: ./build/output/images/*
-        draft: false
-
-#    - name: Rollback release
-#      if: failure() && inputs.release-id != '' && inputs.github-token != ''
-#      uses: author/action-rollback@stable
+#    - name: Upload Image to Release
+#      if: inputs.release-id != '' && inputs.github-token != ''
+#      uses: xresloader/upload-to-github-release@v1
 #      env:
 #        GITHUB_TOKEN: ${{ inputs.github-token }}
 #      with:
 #        release_id: ${{ inputs.release-id }}
+#        file: ./build/output/images/*
+#        draft: false
