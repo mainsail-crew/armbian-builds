@@ -64,10 +64,8 @@ jobs:
         with:
           name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
-          body_path: README.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          target_commitish: main
-          draft: false
+          draft: true
     outputs:
       release_id: ${{ steps.release.outputs.id }}
 
@@ -86,3 +84,25 @@ jobs:
           configfile: ${{ matrix.configfile }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  finish:
+    name: Finish BuildTrain
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Release
+        if: success() && needs.prepare_release.outputs.release_id != ''
+        uses: irongut/EditRelease@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ needs.prepare_release.outputs.release_id }}
+          draft: false
+
+      - name: Rollback Release
+        if: failure() && needs.prepare_release.outputs.release_id != ''
+        uses: author/action-rollback@stable
+        with:
+          release_id: ${{ needs.prepare_release.outputs.release_id }}
+          delete_orphan_tag: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
