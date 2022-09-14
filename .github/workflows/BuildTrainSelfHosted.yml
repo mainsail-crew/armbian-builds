@@ -67,6 +67,10 @@ jobs:
           tag_name: ${{ steps.time.outputs.time }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: output
+        run: |
+          echo ${{ steps.release.outputs.id }}
+
   build:
     name: Build Images
     needs: [setup, prepare_release]
