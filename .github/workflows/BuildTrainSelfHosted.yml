@@ -72,7 +72,7 @@ jobs:
   build:
     name: Build Images
     needs: [setup, prepare_release]
-    runs-on: fast-runner
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -92,7 +92,7 @@ jobs:
     steps:
       - name: Publish Release
         if: success() && needs.prepare_release.outputs.release_id != ''
-        uses: irongut/EditRelease@v1
+        uses: irongut/EditRelease@v1.2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           id: ${{ needs.prepare_release.outputs.release_id }}
