@@ -28,12 +28,11 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          cd ${{ github.workspace }}/test
-          echo "::set-output name=matrix::$(ls * | jq -R -s -c 'split("\n")[:-1]')"
+          JSON=$(find ${{ github.workspace }}/test -type f -name "*" -printf '%f\n' | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=matrix::${JSON}"
 
   prepare_release:
     name: Create Release
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
