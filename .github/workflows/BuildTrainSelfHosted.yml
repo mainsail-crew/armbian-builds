@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       id: ${{ steps.release.outputs.id }}
+      tag_name: ${{ steps.time.outputs.time }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -106,6 +107,7 @@ jobs:
         uses: author/action-rollback@stable
         with:
           release_id: ${{ needs.release.outputs.id }}
+          tag: ${{ needs.release.outputs.tag_name }}
           delete_orphan_tag: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
