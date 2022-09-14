@@ -57,16 +57,16 @@ runs:
       run: |
         cd ./build
         ./compile.sh \
-          BOARD=${{ steps.config.outputs.board }} \
-          RELEASE=${{ steps.config.outputs.release }} \
-          BRANCH=${{ steps.config.outputs.branch }} \
-          BUILD_DESKTOP=${{ steps.config.outputs.build_desktop }} \
-          BUILD_MINIMAL=${{ steps.config.outputs.build_minimal }} \
-          KERNEL_ONLY=${{ steps.config.outputs.kernel_only }} \
-          KERNEL_CONFIGURE=${{ steps.config.outputs.kernel_configure }} \
-          BOOTFS_TYPE=${{ steps.config.outputs.bootfs_type }} \
-          COMPRESS_OUTPUTIMAGE=${{ steps.config.outputs.compress_outputimage }} \
-          REPOSITORY_INSTALL=${{ steps.config.outputs.repository_install }}
+          BOARD="${{ steps.config.outputs.board }}" \
+          RELEASE="${{ steps.config.outputs.release }}" \
+          BRANCH="${{ steps.config.outputs.branch }}" \
+          BUILD_DESKTOP="${{ steps.config.outputs.build_desktop }}" \
+          BUILD_MINIMAL="${{ steps.config.outputs.build_minimal }}" \
+          KERNEL_ONLY="${{ steps.config.outputs.kernel_only }}" \
+          KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
+          BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
+          COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
+          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}"
 
     - name: Fix userrights
       shell: bash
@@ -75,12 +75,12 @@ runs:
         sudo chown -R $USER:$USER $WORKSPACE/build/. || true
         sudo df
 
-#    - name: Upload Image to Release
-#      if: inputs.release-id != '' && inputs.github-token != ''
-#      uses: xresloader/upload-to-github-release@v1
-#      env:
-#        GITHUB_TOKEN: ${{ inputs.github-token }}
-#      with:
-#        release_id: ${{ inputs.release-id }}
-#        file: ./build/output/images/*
-#        draft: false
+    - name: Upload Image to Release
+      if: inputs.release-id != '' && inputs.github-token != ''
+      uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        release_id: ${{ inputs.release-id }}
+        file: ./build/output/images/*
+        draft: true
