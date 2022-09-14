@@ -76,7 +76,7 @@ jobs:
   build:
     name: Build Images
     needs: prepare_release
-    runs-on: fast-runner
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
