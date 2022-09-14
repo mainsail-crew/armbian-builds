@@ -30,7 +30,7 @@ jobs:
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo $JSON
-          echo $(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n')
+          echo $(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##')
           echo "::set-output name=configfiles::${JSON}"
 
   prepare_release:
