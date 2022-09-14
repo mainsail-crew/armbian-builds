@@ -28,7 +28,7 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          cd ${{ github.workspace }}/configs
+          cd ${{ github.workspace }}/test
           echo "::set-output name=matrix::$(ls * | jq -R -s -c 'split("\n")[:-1]')"
 
   prepare_release:
@@ -59,7 +59,7 @@ jobs:
 
   build:
     name: Build Images
-    needs: prepare_release
+    needs: [setup, prepare_release]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
