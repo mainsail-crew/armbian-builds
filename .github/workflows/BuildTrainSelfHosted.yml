@@ -72,7 +72,7 @@ jobs:
         run: |
           echo ${{ needs.setup.outputs.configfiles }}
           echo ${{ needs.setup.outputs.matrix }}
-          echo ${${{ fromJSON(needs.setup.outputs.configfiles) }}[0]}
+          echo ${{ fromJson(needs.setup.outputs.matrix) }}
 
   build:
     name: Build Images
