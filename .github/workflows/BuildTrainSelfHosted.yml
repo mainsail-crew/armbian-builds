@@ -72,8 +72,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-#        BOARD: [ radxa-zero, orangepizero ]
-#        BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero, orangepizero2 ]
         FILE: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: fast-runner
     steps:
