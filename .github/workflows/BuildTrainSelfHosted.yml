@@ -66,10 +66,7 @@ jobs:
           name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: output
-        run: |
-          echo ${{ steps.release.outputs.id }}
+          draft: true
 
   build:
     name: Build Images
@@ -99,25 +96,12 @@ jobs:
         with:
           id: ${{ needs.release.outputs.id }}
 
-  test:
-    name: Cleanup BuildTrain
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - name: output
-        run: |
-          echo ${{ needs.release.outputs.id }}
-
   cleanup:
     name: Cleanup BuildTrain
     needs: [release, build]
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
-      - name: output
-        run: |
-          echo ${{ needs.release.outputs.id }}
-
       - name: Rollback Release
         uses: author/action-rollback@stable
         with:
