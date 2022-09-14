@@ -7,7 +7,7 @@ on:
       - ".github/workflows/BuildTrainSelfHosted.yml"
       - "actions/build-image/action.yml"
       - "actions/runner-prepare/action.yml"
-      - "configs/config-default.conf"
+      - "configs/*"
   workflow_dispatch:
 
 # Allow to stop obsolete workflows
