@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish Release
-        if: success() && needs.prepare_release.outputs.release_id != ''
+        if: !failure() && needs.prepare_release.outputs.release_id != ''
         uses: irongut/EditRelease@v1.2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
