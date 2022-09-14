@@ -98,13 +98,17 @@ jobs:
           id: ${{ needs.prepare_release.outputs.release_id }}
 
   cleanup:
-    name: Finish BuildTrain
+    name: Cleanup BuildTrain
     needs: build
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
+      - name: output
+        run: |
+          echo ${{ needs.prepare_release.outputs.release_id }}
+
       - name: Rollback Release
-        if: failure() && needs.prepare_release.outputs.release_id != ''
+        if: failure()
         uses: author/action-rollback@stable
         with:
           release_id: ${{ needs.prepare_release.outputs.release_id }}
