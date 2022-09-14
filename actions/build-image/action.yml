@@ -45,7 +45,7 @@ runs:
       shell: bash
       run: |
         source ./own-configs/configs/config-default.conf
-        source ./own-configs/configs/board-${{ inputs.config }}.conf
+        source ./own-configs/configs/board-${{ inputs.configfile }}.conf
         
         echo $BOARD
 

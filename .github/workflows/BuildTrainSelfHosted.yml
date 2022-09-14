@@ -20,7 +20,7 @@ jobs:
     name: Create Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,7 +28,7 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          echo "::set-output name=matrix::$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')"
+          echo "::set-output name=configfiles::$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')"
 
   prepare_release:
     name: Create Release
@@ -73,8 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-#        configfile: ${{ fromJson(needs.setup.outputs.matrix) }}
-        configfile: ["radxa-zero","orangepi4-lts","orangepi3-lts"]
+        configfile: ${{ fromJSON(needs.setup.outputs.configfiles) }}
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
