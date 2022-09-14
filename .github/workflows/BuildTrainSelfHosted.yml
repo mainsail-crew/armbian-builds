@@ -33,8 +33,9 @@ jobs:
           echo $JSON
           echo $(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##')
           echo "::set-output name=configfiles::${JSON}"
+          
           cd ${{ github.workspace }}/configs
-          echo "::set-output name=matrix::{\"configfiles\":$(ls * | jq -R -s -c 'split("\n")[:-1]')}"
+          echo "::set-output name=matrix::$(ls * | jq -R -s -c 'split("\n")[:-1]')"
 
   prepare_release:
     name: Create Release
@@ -80,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ needs.setup.outputs.configfiles }}
+        board: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
