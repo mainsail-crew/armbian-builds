@@ -19,6 +19,8 @@ jobs:
   setup:
     name: Create Matrix
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,7 +29,7 @@ jobs:
         id: set-matrix
         run: |
           cd ${{ github.workspace }}
-          MATRIX="${(find ./configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##')}"
+          MATRIX="$(find ./configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##')"
           echo "::set-output name=matrix::${MATRIX}"
 
   prepare_release:
