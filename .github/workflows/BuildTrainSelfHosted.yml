@@ -28,7 +28,7 @@ jobs:
       - name: Create Matrix
         id: set-matrix
         run: |
-          echo "::set-output name=matrix::$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')"
+          echo "::set-output name=matrix::$(ls ./configs/* | jq -R -s -c 'split("\n")[:-1]')"
 
   prepare_release:
     name: Create Release
@@ -72,7 +72,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        FILE: ${{ needs.setup.outputs.matrix }}
+        FILE: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: fast-runner
     steps:
       - name: Build image
