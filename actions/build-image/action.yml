@@ -56,7 +56,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-       ./compile.sh \
+        ./compile.sh \
           BOARD=${{ steps.config.outputs.board }} \
           RELEASE=${{ steps.config.outputs.release }} \
           BRANCH=${{ steps.config.outputs.branch }} \

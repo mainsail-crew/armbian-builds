@@ -100,12 +100,12 @@ jobs:
   cleanup:
     name: Cleanup BuildTrain
     needs: [release, build]
-    if: ${{ cancelled() || failure() }}
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - name: Rollback Release
-        uses: author/action-rollback@master
+      - name: Delete drafts
+        uses: hugo19941994/delete-draft-releases@v1.0.0
         with:
-          release_id: ${{ needs.release.outputs.id }}
+          threshold: 2d
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
