@@ -74,12 +74,12 @@ jobs:
       matrix:
 #        BOARD: [ radxa-zero, orangepizero ]
 #        BOARD: [ radxa-zero, orangepi3-lts, orangepi4-lts, orangepizero, orangepizero2 ]
-        CONFIG: ${{ fromJson(needs.setup.outputs.matrix) }}
+        FILE: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: fast-runner
     steps:
       - name: Build image
         uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
         with:
-          config: ${{ matrix.CONFIG }}
+          file: ${{ matrix.FILE }}
           release-id: ${{ needs.prepare_release.outputs.release_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
