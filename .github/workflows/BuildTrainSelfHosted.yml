@@ -100,11 +100,11 @@ jobs:
   cleanup:
     name: Cleanup BuildTrain
     needs: [release, build]
-    if: ${{ failure() }}
+    if: ${{ cancelled() || failure() }}
     runs-on: ubuntu-latest
     steps:
       - name: Rollback Release
-        uses: author/action-rollback@stable
+        uses: author/action-rollback@master
         with:
           release_id: ${{ needs.release.outputs.id }}
         env:
