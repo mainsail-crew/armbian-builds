@@ -73,7 +73,7 @@ jobs:
 
   build:
     name: Build Images
-    needs: [setup, prepare_release]
+    needs: [setup, release]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
