@@ -57,7 +57,7 @@ jobs:
       release_id: ${{ steps.release.outputs.id }}
 
   test_json:
-    name: Create Release
+    name: Test output
     needs: setup
     runs-on: ubuntu-latest
     steps:
