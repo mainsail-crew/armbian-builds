@@ -91,11 +91,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish Release
-        uses: irongut/EditRelease@v1.2.0
+        uses: StuYarrow/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           id: ${{ needs.prepare_release.outputs.release_id }}
-          draft: false
 
       - name: Rollback Release
         if: failure() && needs.prepare_release.outputs.release_id != ''
