@@ -47,6 +47,7 @@ jobs:
           fetch-depth: 1
           repository: armbian/build
           path: armbian-build
+          ref: 'v22.08'
 
       - name: Get armbian version
         id: armbian-version
