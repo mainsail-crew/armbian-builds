@@ -24,7 +24,7 @@ runs:
       with:
         fetch-depth: 1
         repository: armbian/build
-        ref: master
+        ref: 'v22.08'
         path: build
 
     - name: Checkout meteyou/armbian-builds
@@ -33,7 +33,6 @@ runs:
         fetch-depth: 1
         repository: meteyou/armbian-builds
         path: build-configs
-        ref: 'v22.08'
 
     - name: Read configs
       id: config
