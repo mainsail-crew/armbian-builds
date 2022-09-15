@@ -33,6 +33,7 @@ runs:
         fetch-depth: 1
         repository: meteyou/armbian-builds
         path: build-configs
+        ref: 'v22.08'
 
     - name: Read configs
       id: config
