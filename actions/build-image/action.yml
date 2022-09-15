@@ -50,6 +50,7 @@ runs:
         echo "::set-output name=bootfs_type::${BOOTFS_TYPE}"
         echo "::set-output name=compress_outputimage::${COMPRESS_OUTPUTIMAGE}"
         echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
+        echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
         echo "::set-output name=board::${BOARD}"
 
     - name: Build Image
@@ -66,7 +67,8 @@ runs:
           KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
           BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
           COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
-          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}"
+          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}" \
+          NO_APT_CACHER="${{ steps.config.outputs.no_apt_cacher }}"
 
     - name: Fix userrights
       shell: bash
