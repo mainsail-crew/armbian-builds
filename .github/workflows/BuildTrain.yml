@@ -1,12 +1,11 @@
-name: Build Train Self Hosted
+name: Build Train
 on:
   push:
     branches:
       - "**"
     paths:
-      - ".github/workflows/BuildTrainSelfHosted.yml"
-      - "actions/build-image/action.yml"
-      - "actions/runner-prepare/action.yml"
+      - ".github/workflows/BuildTrain.yml"
+      - "actions/**"
       - "configs/*"
   workflow_dispatch:
 
@@ -73,18 +72,26 @@ jobs:
   build:
     name: Build Images
     needs: [setup, release]
-    runs-on: fast-runner
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
     steps:
       - name: Build image
-        uses: meteyou/armbian-builds/actions/build-image@test-self-hosted
+        uses: meteyou/armbian-builds/actions/build-image-docker@test-self-hosted
         with:
           configfile: ${{ matrix.configfile }}
-          release-id: ${{ needs.release.outputs.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Image to Release
+        if: needs.release.outputs.id != ''
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ needs.release.outputs.id }}
+          file: ./build/output/images/*
+          draft: true
 
   finish:
     name: Finish BuildTrain

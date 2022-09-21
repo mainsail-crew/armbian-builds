@@ -1,23 +1,21 @@
 name: 'Armbian/build'
 author: 'Stefan Dej'
-description: 'Build armbian images'
+description: 'Build armbian images on Github Runner'
 inputs:
   configfile:
     description: 'Config file name'
     required: true
-  release-id:
-    description: 'ID from github release'
-    required: false
-  github-token:
-    description: 'github token'
-    required: true
-
 
 runs:
   using: 'composite'
   steps:
-    - name: Runner prepare
-      uses: meteyou/armbian-builds/actions/runner-prepare@test-self-hosted
+    - name: Get more space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 30720
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
+        remove-android: 'true'
 
     - name: Checkout armbian/build
       uses: actions/checkout@v3
@@ -27,11 +25,10 @@ runs:
         ref: 'v22.08'
         path: build
 
-    - name: Checkout meteyou/armbian-builds
+    - name: Checkout Repository
       uses: actions/checkout@v3
       with:
         fetch-depth: 1
-        repository: meteyou/armbian-builds
         path: build-configs
 
     - name: Read configs
@@ -57,7 +54,12 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./compile.sh \
+        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
+        docker_tag=$(cat VERSION|cut -d "-" -f1)
+        docker_tag_in_repo=${docker_tag:0:5}
+        docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64
+        docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
+        ./compile.sh docker \
           BOARD="${{ steps.config.outputs.board }}" \
           RELEASE="${{ steps.config.outputs.release }}" \
           BRANCH="${{ steps.config.outputs.branch }}" \
@@ -67,12 +69,4 @@ runs:
           KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
           BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
           COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
-          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}" \
-          NO_APT_CACHER="${{ steps.config.outputs.no_apt_cacher }}"
-
-    - name: Fix userrights
-      shell: bash
-      run: |
-        WORKSPACE=$(echo ${{ github.workspace }})
-        sudo chown -R $USER:$USER $WORKSPACE/build/. || true
-        sudo df
+          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}"
