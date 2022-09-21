@@ -1,6 +1,6 @@
 name: 'Armbian/build'
 author: 'Stefan Dej'
-description: 'Build armbian images on Github Runner'
+description: 'Armbian Linux build framework from amazingfate/armbian-compile-action'
 inputs:
   configfile:
     description: 'Config file name'
@@ -17,14 +17,6 @@ runs:
         remove-dotnet: 'true'
         remove-android: 'true'
 
-    - name: Checkout armbian/build
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        repository: armbian/build
-        ref: 'v22.08'
-        path: build
-
     - name: Checkout Repository
       uses: actions/checkout@v3
       with:
@@ -38,8 +30,11 @@ runs:
         source ./build-configs/configs/config-default.conf
         source ./build-configs/configs/board-${{ inputs.configfile }}.conf
         
-        echo "::set-output name=release::${RELEASE}"        
-        echo "::set-output name=branch::${BRANCH}"        
+        echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
+        echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+        
+        echo "::set-output name=release::${RELEASE}"
+        echo "::set-output name=branch::${BRANCH}"
         echo "::set-output name=build_desktop::${BUILD_DESKTOP}"
         echo "::set-output name=build_minimal::${BUILD_MINIMAL}"
         echo "::set-output name=kernel_only::${KERNEL_ONLY}"
@@ -49,6 +44,14 @@ runs:
         echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
         echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
         echo "::set-output name=board::${BOARD}"
+
+    - name: Checkout armbian Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        repository: ${{ steps.config.outputs.armbian_repository }}
+        ref: ${{ steps.config.outputs.armbian_branch }}
+        path: build
 
     - name: Build Image
       shell: bash
