@@ -36,7 +36,6 @@ runs:
         echo "::set-output name=kernel_only::${KERNEL_ONLY}"
         echo "::set-output name=kernel_configure::${KERNEL_CONFIGURE}"
         echo "::set-output name=bootfs_type::${BOOTFS_TYPE}"
-        echo "::set-output name=compress_outputimage::${COMPRESS_OUTPUTIMAGE}"
         echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
         echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
         echo "::set-output name=board::${BOARD}"
@@ -62,7 +61,6 @@ runs:
           KERNEL_ONLY="${{ steps.config.outputs.kernel_only }}" \
           KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
           BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
-          COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
           REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}" \
           NO_APT_CACHER="${{ steps.config.outputs.no_apt_cacher }}"
 
