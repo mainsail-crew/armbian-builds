@@ -83,6 +83,14 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
+      - name: Rename Files
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          mv *.img ${{ matrix.configfile }}.img
+          mv *.txt ${{ matrix.configfile }}.txt
+          rm *.sha
+
       - name: Compressing Image
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
