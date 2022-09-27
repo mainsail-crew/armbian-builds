@@ -103,7 +103,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ needs.release.outputs.id }}
-          file: ./build/output/images/*.img
+          file: ./build/output/images/*.img.xz
           draft: true
 
       - name: Upload Checksum to Release
