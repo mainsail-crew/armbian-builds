@@ -70,3 +70,12 @@ runs:
         WORKSPACE=$(echo ${{ github.workspace }})
         sudo chown -R $USER:$USER $WORKSPACE/build/. || true
         sudo df
+
+    - name: Rename Files
+      shell: bash
+      run: |
+        WORKSPACE=$(echo ${{ github.workspace }})
+        cd $WORKSPACE/build/output/images/
+        mv *.img ${{ inputs.configfile }}.img
+        mv *.txt ${{ inputs.configfile }}.txt
+        rm *.sha
