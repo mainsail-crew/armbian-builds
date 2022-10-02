@@ -5,7 +5,7 @@ on:
     types: [ opened, edited, reopened, synchronize ]
     paths:
       - "actions/**"
-      - "config/config-default.conf"
+      - "configs/config-default.conf"
       - ".github/workflows/pull_request-all.yml"
 
 # Allow to stop obsolete workflows
