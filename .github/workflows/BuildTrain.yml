@@ -1,17 +1,22 @@
 name: Build Train
 on:
+  # on every monday at 4:30
+  schedule:
+    - cron:  '30 4 * * 1'
+
+  # build a new release on push a new config file
   push:
     branches:
-      - "**"
+      - "master"
     paths:
-      - ".github/workflows/BuildTrain.yml"
-      - "actions/**"
       - "configs/*"
+
+  # enable manual start of this workflow
   workflow_dispatch:
 
 # Allow to stop obsolete workflows
 concurrency:
-  group: ci-buildtrain-self-hosted-${{ github.ref }}-1
+  group: ci-buildtrain-release-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
@@ -40,18 +45,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Checkout armbian/build
+      - name: Read configs
+        id: config
+        shell: bash
+        run: |
+          source ./build-configs/configs/config-default.conf
+
+          echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
+          echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+
+      - name: Checkout armbian Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          repository: armbian/build
-          path: armbian-build
-          ref: 'v22.08'
+          repository: ${{ steps.config.outputs.armbian_repository }}
+          ref: ${{ steps.config.outputs.armbian_branch }}
+          path: build
 
       - name: Get armbian version
         id: armbian-version
         run: |
-          VERSION=$(cat ./armbian-build/VERSION)
+          VERSION=$(cat ./build/VERSION)
           echo "::set-output name=version::${VERSION}"
 
       - name: Get time
@@ -79,7 +93,7 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
     steps:
       - name: Build image
-        uses: meteyou/armbian-builds/actions/build-image-docker@test-self-hosted
+        uses: mainsail-crew/armbian-builds/actions/build-image-docker@master
         with:
           configfile: ${{ matrix.configfile }}
 
