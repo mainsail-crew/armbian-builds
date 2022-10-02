@@ -27,13 +27,20 @@ jobs:
           format: 'json'
 
       - name: Create Matrix JS
+        id: set-matrix-js
         uses: actions/github-script@v6
         env:
-          INPUT: ${{ steps.changed-files.outputs.all }}
+          FILES: ${{ steps.changed-files.outputs.added_modified }}
         with:
+          result-encoding: string
           script: |
-            const { INPUT } = process.env
-            console.log(INPUT)
+            const { FILES } = process.env
+            
+            return FILES.filter((file) => file.startWith('configs/board-*') && file.endsWith('.conf'))
+
+      - name: output result
+        run: |
+          echo ${{ steps.set-matrix-js.outputs.result }}
 
       - name: Create Matrix
         id: set-matrix
