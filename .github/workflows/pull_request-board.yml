@@ -30,11 +30,15 @@ jobs:
         id: set-matrix-js
         uses: actions/github-script@v6
         env:
-          FILES: ${{ steps.changed-files.outputs.added_modified }}
+          JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
         with:
           result-encoding: string
           script: |
-            const { FILES } = process.env
+            const { JSON_STRING } = process.env
+            const array = JSON.parse(JSON_STRING)
+            
+            console.log(JSON_STRING)
+            console.log(array)
             
             return FILES.filter((file) => file.startWith('configs/board-*') && file.endsWith('.conf'))
 
