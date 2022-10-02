@@ -1,2 +1,1 @@
 BOARD=rock-3a
-BRANCH=edge
