@@ -27,7 +27,7 @@ jobs:
           format: 'json'
 
       - name: Create Matrix JS
-        id: set-matrix-js
+        id: set-matrix
         uses: actions/github-script@v6
         env:
           JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
@@ -39,21 +39,73 @@ jobs:
             const filteredArray = array.filter((file) => file.startsWith('configs/board-') && file.endsWith('.conf'))
             const outputArray = filteredArray.map((file) => file.slice(14, file.length - 5))
             
-            console.log(JSON_STRING)
-            console.log(array)
-            console.log(filteredArray)
-            console.log(outputArray)
-            
             return JSON.stringify(outputArray)
 
-      - name: output result
-        run: |
-          echo ${{ steps.set-matrix-js.outputs.result }}
-
-      - name: Create Matrix
-        id: set-matrix
-        run: |
-          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=configfiles::${JSON}"
     outputs:
-      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
+      configfiles: ${{ steps.set-matrix.outputs.result }}
+
+
+  build:
+    name: Build Images
+    needs: [ setup ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
+    steps:
+      - name: Build image
+        uses: mainsail-crew/armbian-builds/actions/build-image-docker@master
+        with:
+          configfile: ${{ matrix.configfile }}
+
+      - name: Rename Files
+        id: rename-files
+        run: |
+
+          source ./build-configs/configs/config-default.conf
+          source ./build-configs/configs/board-${{ matrix.configfile }}.conf
+
+          NOW="$(date +"%Y-%m-%d")"
+          VERSION=$(cat ./build/VERSION)
+          IMAGE="${NOW}-armbian-${VERSION}-${{ matrix.configfile }}"
+
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+
+          mv *.img ${IMAGE}.img
+          mv *.txt ${IMAGE}.txt
+          rm *.sha
+
+          echo "::set-output name=image::$IMAGE"
+
+      - name: Compressing Image
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          xz -efkvz ${{ steps.rename-files.outputs.image }}.img
+
+      - name: Calculating checksums
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          sha256sum ${{ steps.rename-files.outputs.image }}.img > ${{ steps.rename-files.outputs.image }}.img.sha256
+          sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Compressed Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
+
+      - name: Upload Compressed Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
