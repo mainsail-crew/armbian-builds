@@ -27,7 +27,7 @@ jobs:
           format: 'json'
 
       - name: Create Matrix JS
-        uses: action/github-action@v6
+        uses: actions/github-script@v6
         env:
           INPUT: ${{ steps.changed-files.outputs.all }}
         with:
