@@ -1,0 +1,174 @@
+name: Build Train
+on:
+  # on every monday at 4:30
+  schedule:
+    - cron:  '30 4 * * 1'
+
+  # build a new release on push a new config file
+  push:
+    branches:
+      - "master"
+    paths:
+      - "configs/*"
+
+  # enable manual start of this workflow
+  workflow_dispatch:
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-release-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Create Matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create Matrix
+        id: set-matrix
+        run: |
+          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=configfiles::${JSON}"
+    outputs:
+      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      id: ${{ steps.release.outputs.id }}
+      tag_name: ${{ steps.time.outputs.time }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Read configs
+        id: config
+        shell: bash
+        run: |
+          source ./build-configs/configs/config-default.conf
+
+          echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
+          echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+
+      - name: Checkout armbian Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          repository: ${{ steps.config.outputs.armbian_repository }}
+          ref: ${{ steps.config.outputs.armbian_branch }}
+          path: build
+
+      - name: Get armbian version
+        id: armbian-version
+        run: |
+          VERSION=$(cat ./build/VERSION)
+          echo "::set-output name=version::${VERSION}"
+
+      - name: Get time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYYMMDD-HHmm'
+
+      - name: Create empty release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
+          tag_name: ${{ steps.time.outputs.time }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+
+  build:
+    name: Build Images
+    needs: [setup, release]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
+    steps:
+      - name: Build image
+        uses: mainsail-crew/armbian-builds/actions/build-image-docker@master
+        with:
+          configfile: ${{ matrix.configfile }}
+
+      - name: Rename Files
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          mv *.img ${{ matrix.configfile }}.img
+          mv *.txt ${{ matrix.configfile }}.txt
+          rm *.sha
+
+      - name: Compressing Image
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          xz -efkvz ${{ matrix.configfile }}.img
+
+      - name: Calculating checksums
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          sha256sum ${{ matrix.configfile }}.img > ${{ matrix.configfile }}.img.sha256
+          sha256sum ${{ matrix.configfile }}.img.xz > ${{ matrix.configfile }}.img.xz.sha256
+
+      - name: Upload Image to Release
+        if: needs.release.outputs.id != ''
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ needs.release.outputs.id }}
+          file: ./build/output/images/*.img.xz
+          draft: true
+
+      - name: Upload Checksum to Release
+        if: needs.release.outputs.id != ''
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ needs.release.outputs.id }}
+          file: ./build/output/images/*.sha256
+          draft: true
+
+      - name: Upload Config to Release
+        if: needs.release.outputs.id != ''
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ needs.release.outputs.id }}
+          file: ./build/output/images/*.txt
+          draft: true
+
+  finish:
+    name: Finish BuildTrain
+    needs: [release, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Release
+        uses: StuYarrow/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          id: ${{ needs.release.outputs.id }}
+
+  cleanup:
+    name: Cleanup BuildTrain
+    needs: [release, build]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete drafts
+        uses: hugo19941994/delete-draft-releases@v1.0.0
+        with:
+          threshold: 2d
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

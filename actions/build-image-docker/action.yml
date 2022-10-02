@@ -1,0 +1,75 @@
+name: 'Armbian/build'
+author: 'Stefan Dej'
+description: 'Armbian Linux build framework from amazingfate/armbian-compile-action'
+inputs:
+  configfile:
+    description: 'Config file name'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get more space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 30720
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
+        remove-android: 'true'
+
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        path: build-configs
+
+    - name: Read configs
+      id: config
+      shell: bash
+      run: |
+        source ./build-configs/configs/config-default.conf
+        source ./build-configs/configs/board-${{ inputs.configfile }}.conf
+        
+        echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
+        echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+        
+        echo "::set-output name=release::${RELEASE}"
+        echo "::set-output name=branch::${BRANCH}"
+        echo "::set-output name=build_desktop::${BUILD_DESKTOP}"
+        echo "::set-output name=build_minimal::${BUILD_MINIMAL}"
+        echo "::set-output name=kernel_only::${KERNEL_ONLY}"
+        echo "::set-output name=kernel_configure::${KERNEL_CONFIGURE}"
+        echo "::set-output name=bootfs_type::${BOOTFS_TYPE}"
+        echo "::set-output name=compress_outputimage::${COMPRESS_OUTPUTIMAGE}"
+        echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
+        echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
+        echo "::set-output name=board::${BOARD}"
+
+    - name: Checkout armbian Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        repository: ${{ steps.config.outputs.armbian_repository }}
+        ref: ${{ steps.config.outputs.armbian_branch }}
+        path: build
+
+    - name: Build Image
+      shell: bash
+      run: |
+        cd ./build
+        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
+        docker_tag=$(cat VERSION|cut -d "-" -f1)
+        docker_tag_in_repo=${docker_tag:0:5}
+        docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64
+        docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
+        ./compile.sh docker \
+          BOARD="${{ steps.config.outputs.board }}" \
+          RELEASE="${{ steps.config.outputs.release }}" \
+          BRANCH="${{ steps.config.outputs.branch }}" \
+          BUILD_DESKTOP="${{ steps.config.outputs.build_desktop }}" \
+          BUILD_MINIMAL="${{ steps.config.outputs.build_minimal }}" \
+          KERNEL_ONLY="${{ steps.config.outputs.kernel_only }}" \
+          KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
+          BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
+          COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
+          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}"
