@@ -37,7 +37,7 @@ jobs:
             const { JSON_STRING } = process.env
             const array = JSON.parse(JSON_STRING)
             const filteredArray = array.filter((file) => file.startsWith('configs/board-') && file.endsWith('.conf'))
-            const outputArray = array.map((file) => file.slice(13, file.length - 5))
+            const outputArray = filteredArray.map((file) => file.slice(14, file.length - 5))
             
             console.log(JSON_STRING)
             console.log(array)
