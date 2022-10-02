@@ -1,0 +1,44 @@
+name: PR - Build specific Board
+on:
+  # build images in PRs with changed board config files
+  pull_request:
+    types: [ opened, edited, reopened, synchronize ]
+    paths:
+      - "config/board-*.conf"
+      - ".github/workflows/pull_request-board.yml"
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-pr-all-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Create Matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get changed Files
+        id: changed-files
+        uses: jitterbit/get-changed-files@v1
+        with:
+          format: 'json'
+
+      - name: Create Matrix JS
+        uses: action/github-action@v6
+        env:
+          INPUT: ${{ steps.changed-files.outputs.all }}
+        with:
+          script: |
+            const { INPUT } = process.env
+            console.log(INPUT)
+
+      - name: Create Matrix
+        id: set-matrix
+        run: |
+          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=configfiles::${JSON}"
+    outputs:
+      configfiles: ${{ steps.set-matrix.outputs.configfiles }}
