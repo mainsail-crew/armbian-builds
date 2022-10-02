@@ -40,7 +40,7 @@ jobs:
             console.log(JSON_STRING)
             console.log(array)
             
-            return FILES.filter((file) => file.startWith('configs/board-*') && file.endsWith('.conf'))
+            return array.filter((file) => file.startWith('configs/board-*') && file.endsWith('.conf'))
 
       - name: output result
         run: |
