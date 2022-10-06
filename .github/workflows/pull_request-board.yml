@@ -1,7 +1,7 @@
 name: PR - Build specific Board
 on:
   # build images in PRs with changed board config files
-  pull_request:
+  pull_request_target:
     types: [ opened, edited, reopened, synchronize ]
     paths:
       - "configs/board-**"

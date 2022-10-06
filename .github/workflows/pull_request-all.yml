@@ -1,7 +1,7 @@
 name: PR - Build all
 on:
   # build a new release on push a new config file
-  pull_request:
+  pull_request_target:
     types: [ opened, edited, reopened, synchronize ]
     paths:
       - "actions/**"
