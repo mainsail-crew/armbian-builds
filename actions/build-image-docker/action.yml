@@ -32,6 +32,7 @@ runs:
         
         echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
         echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+        echo "::set-output name=armbian_docker_config::${ARMBIAN_DOCKER_CONFIG}"
         
         echo "::set-output name=release::${RELEASE}"
         echo "::set-output name=branch::${BRANCH}"
@@ -57,7 +58,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
+        sed -i -e 's/-it//g' ${{ steps.config.outputs.armbian_docker_config }}
         docker_tag=$(cat VERSION|cut -d "-" -f1)
         docker_tag_in_repo=${docker_tag:0:5}
         docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64
