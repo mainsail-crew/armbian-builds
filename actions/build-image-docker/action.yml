@@ -17,12 +17,6 @@ runs:
         remove-dotnet: 'true'
         remove-android: 'true'
 
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        path: build-configs
-
     - name: Read configs
       id: config
       shell: bash
