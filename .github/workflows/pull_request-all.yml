@@ -39,7 +39,7 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
     steps:
       - name: Build image
-        uses: mainsail-crew/armbian-builds/actions/build-image-docker@master
+        uses: mainsail-crew/armbian-builds/actions/build-image-docker@chore/rework-workflows
         with:
           configfile: ${{ matrix.configfile }}
 
