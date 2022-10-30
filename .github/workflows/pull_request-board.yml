@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [ opened, edited, reopened, synchronize ]
     paths:
-      - "configs/board-**"
+      - "configs/board-**.conf"
       - ".github/workflows/pull_request-board.yml"
 
 # Allow to stop obsolete workflows
