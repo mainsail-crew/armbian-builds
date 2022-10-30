@@ -30,8 +30,8 @@ runs:
         source ./build-configs/configs/config-default.conf
         source ./build-configs/configs/board-${{ inputs.configfile }}.conf
         
-        echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUTS
-        echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUTS
+        echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
+        echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
 
     - name: Checkout armbian Repository
       uses: actions/checkout@v3
