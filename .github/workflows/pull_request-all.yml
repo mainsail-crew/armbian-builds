@@ -61,7 +61,7 @@ jobs:
           mv *.txt ${IMAGE}.txt
           rm *.sha
           
-          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
       - name: Compressing Image
         run: |
