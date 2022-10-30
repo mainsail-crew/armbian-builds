@@ -25,7 +25,7 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=configfiles::${JSON}"
+          echo 'configfiles=$JSON' >> $GITHUB_ENV
     outputs:
       configfiles: ${{ steps.set-matrix.outputs.configfiles }}
 
@@ -61,7 +61,7 @@ jobs:
           mv *.txt ${IMAGE}.txt
           rm *.sha
           
-          echo "::set-output name=image::$IMAGE"
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
       - name: Compressing Image
         run: |
