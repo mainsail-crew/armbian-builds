@@ -76,8 +76,8 @@ jobs:
           mv *.img ${IMAGE}.img
           mv *.txt ${IMAGE}.txt
           rm *.sha
-
-          echo "::set-output name=image::$IMAGE"
+          
+          echo "{image}={$IMAGE}" >> $GITHUB_OUTPUT
 
       - name: Compressing Image
         run: |
