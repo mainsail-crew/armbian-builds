@@ -25,7 +25,7 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo 'configfiles=$JSON' >> $GITHUB_ENV
+          echo "configfiles=${JSON}" >> $GITHUB_ENV
     outputs:
       configfiles: ${{ steps.set-matrix.outputs.configfiles }}
 
