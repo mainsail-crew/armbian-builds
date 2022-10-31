@@ -33,18 +33,6 @@ runs:
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
         
-        echo "::set-output name=release::${RELEASE}"
-        echo "::set-output name=branch::${BRANCH}"
-        echo "::set-output name=build_desktop::${BUILD_DESKTOP}"
-        echo "::set-output name=build_minimal::${BUILD_MINIMAL}"
-        echo "::set-output name=kernel_only::${KERNEL_ONLY}"
-        echo "::set-output name=kernel_configure::${KERNEL_CONFIGURE}"
-        echo "::set-output name=bootfs_type::${BOOTFS_TYPE}"
-        echo "::set-output name=compress_outputimage::${COMPRESS_OUTPUTIMAGE}"
-        echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
-        echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
-        echo "::set-output name=board::${BOARD}"
-        
         echo "release=${RELEASE}" >> $GITHUB_ENV
         echo "branch=${BRANCH}" >> $GITHUB_ENV
         echo "build_desktop=${BUILD_DESKTOP}" >> $GITHUB_ENV
