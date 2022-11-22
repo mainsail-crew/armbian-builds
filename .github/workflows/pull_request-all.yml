@@ -25,7 +25,7 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=configfiles::${JSON}"
+          echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
     outputs:
       configfiles: ${{ steps.set-matrix.outputs.configfiles }}
 
@@ -38,8 +38,14 @@ jobs:
       matrix:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          path: build-configs
+
       - name: Build image
-        uses: mainsail-crew/armbian-builds/actions/build-image-docker@master
+        uses: ./build-configs/actions/build-image-docker
         with:
           configfile: ${{ matrix.configfile }}
 
@@ -61,7 +67,7 @@ jobs:
           mv *.txt ${IMAGE}.txt
           rm *.sha
           
-          echo "::set-output name=image::$IMAGE"
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
       - name: Compressing Image
         run: |
