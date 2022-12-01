@@ -33,6 +33,9 @@ runs:
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
         
+        echo "custom_copy_repository=${CUSTOM_COPY_REPO}" >> $GITHUB_OUTPUT
+        echo "custom_copy_branch=${CUSTOM_COPY_BRANCH}" >> $GITHUB_OUTPUT
+        
         echo "release=${RELEASE}" >> $GITHUB_ENV
         echo "branch=${BRANCH}" >> $GITHUB_ENV
         echo "build_desktop=${BUILD_DESKTOP}" >> $GITHUB_ENV
@@ -52,6 +55,21 @@ runs:
         repository: ${{ steps.config.outputs.armbian_repository }}
         ref: ${{ steps.config.outputs.armbian_branch }}
         path: build
+
+    - name: Checkout Custom Copy Repository
+      if: steps.config.outputs.custom_copy_repository != ''
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        repository: ${{ steps.config.outputs.custom_copy_repository }}
+        ref: ${{ steps.config.outputs.custom_copy_branch }}
+        path: custom-repo
+
+    - name: Copy Custom Repository to armbian/build
+      if: steps.config.outputs.custom_copy_repository != ''
+      shell: bash
+      run: |
+        cp -R ./custom-repo/* ./build/
 
     - name: Build Image
       shell: bash
