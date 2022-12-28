@@ -47,6 +47,13 @@ runs:
         echo "repository_install=${REPOSITORY_INSTALL}" >> $GITHUB_ENV
         echo "no_apt_cacher=${NO_APT_CACHER}" >> $GITHUB_ENV
         echo "board=${BOARD}" >> $GITHUB_ENV
+        
+        echo "download_mirror=${DOWNLOAD_MIRROR}" >> $GITHUB_ENV
+        echo "armbian_mirror=${ARMBIAN_MIRROR}" >> $GITHUB_ENV
+        echo "mainline_mirror=${MAINLINE_MIRROR}" >> $GITHUB_ENV
+        echo "uboot_mirror=${UBOOT_MIRROR}" >> $GITHUB_ENV
+        echo "github_mirror=${GITHUB_MIRROR}" >> $GITHUB_ENV
+        echo "regional_mirror=${REGIONAL_MIRROR}" >> $GITHUB_ENV
 
     - name: Checkout armbian Repository
       uses: actions/checkout@v3
@@ -90,4 +97,10 @@ runs:
           KERNEL_CONFIGURE="${{ env.kernel_configure }}" \
           BOOTFS_TYPE="${{ env.bootfs_type }}"\
           COMPRESS_OUTPUTIMAGE="${{ env.compress_outputimage }}" \
+          DOWNLOAD_MIRROR="${{ env.download_mirror }}" \
+          ARMBIAN_MIRROR="${{ env.armbian_mirror }}" \
+          MAINLINE_MIRROR="${{ env.mainline_mirror }}" \
+          UBOOT_MIRROR="${{ env.uboot_mirror }}" \
+          GITHUB_MIRROR="${{ env.github_mirror }}" \
+          REGIONAL_MIRROR="${{ env.regional_mirror }}" \
           REPOSITORY_INSTALL="${{ env.repository_install }}"

@@ -8,7 +8,7 @@ on:
 
 # Allow to stop obsolete workflows
 concurrency:
-  group: ci-buildtrain-pr-all-${{ github.ref }}-1
+  group: ci-buildtrain-pr-board-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
