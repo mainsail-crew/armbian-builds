@@ -30,20 +30,27 @@ runs:
         source ./build-configs/configs/config-default.conf
         source ./build-configs/configs/board-${{ inputs.configfile }}.conf
         
-        echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
-        echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"
+        echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
+        echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
         
-        echo "::set-output name=release::${RELEASE}"
-        echo "::set-output name=branch::${BRANCH}"
-        echo "::set-output name=build_desktop::${BUILD_DESKTOP}"
-        echo "::set-output name=build_minimal::${BUILD_MINIMAL}"
-        echo "::set-output name=kernel_only::${KERNEL_ONLY}"
-        echo "::set-output name=kernel_configure::${KERNEL_CONFIGURE}"
-        echo "::set-output name=bootfs_type::${BOOTFS_TYPE}"
-        echo "::set-output name=compress_outputimage::${COMPRESS_OUTPUTIMAGE}"
-        echo "::set-output name=repository_install::${REPOSITORY_INSTALL}"
-        echo "::set-output name=no_apt_cacher::${NO_APT_CACHER}"
-        echo "::set-output name=board::${BOARD}"
+        echo "release=${RELEASE}" >> $GITHUB_ENV
+        echo "branch=${BRANCH}" >> $GITHUB_ENV
+        echo "build_desktop=${BUILD_DESKTOP}" >> $GITHUB_ENV
+        echo "build_minimal=${BUILD_MINIMAL}" >> $GITHUB_ENV
+        echo "kernel_only=${KERNEL_ONLY}" >> $GITHUB_ENV
+        echo "kernel_configure=${KERNEL_CONFIGURE}" >> $GITHUB_ENV
+        echo "bootfs_type=${BOOTFS_TYPE}" >> $GITHUB_ENV
+        echo "compress_outputimage=${COMPRESS_OUTPUTIMAGE}" >> $GITHUB_ENV
+        echo "repository_install=${REPOSITORY_INSTALL}" >> $GITHUB_ENV
+        echo "no_apt_cacher=${NO_APT_CACHER}" >> $GITHUB_ENV
+        echo "board=${BOARD}" >> $GITHUB_ENV
+        
+        echo "download_mirror=${DOWNLOAD_MIRROR}" >> $GITHUB_ENV
+        echo "armbian_mirror=${ARMBIAN_MIRROR}" >> $GITHUB_ENV
+        echo "mainline_mirror=${MAINLINE_MIRROR}" >> $GITHUB_ENV
+        echo "uboot_mirror=${UBOOT_MIRROR}" >> $GITHUB_ENV
+        echo "github_mirror=${GITHUB_MIRROR}" >> $GITHUB_ENV
+        echo "regional_mirror=${REGIONAL_MIRROR}" >> $GITHUB_ENV
 
     - name: Checkout armbian Repository
       uses: actions/checkout@v3
@@ -63,13 +70,19 @@ runs:
         docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64
         docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
         ./compile.sh docker \
-          BOARD="${{ steps.config.outputs.board }}" \
-          RELEASE="${{ steps.config.outputs.release }}" \
-          BRANCH="${{ steps.config.outputs.branch }}" \
-          BUILD_DESKTOP="${{ steps.config.outputs.build_desktop }}" \
-          BUILD_MINIMAL="${{ steps.config.outputs.build_minimal }}" \
-          KERNEL_ONLY="${{ steps.config.outputs.kernel_only }}" \
-          KERNEL_CONFIGURE="${{ steps.config.outputs.kernel_configure }}" \
-          BOOTFS_TYPE="${{ steps.config.outputs.bootfs_type }}"\
-          COMPRESS_OUTPUTIMAGE="${{ steps.config.outputs.compress_outputimage }}" \
-          REPOSITORY_INSTALL="${{ steps.config.outputs.repository_install }}"
+          BOARD="${{ env.board }}" \
+          RELEASE="${{ env.release }}" \
+          BRANCH="${{ env.branch }}" \
+          BUILD_DESKTOP="${{ env.build_desktop }}" \
+          BUILD_MINIMAL="${{ env.build_minimal }}" \
+          KERNEL_ONLY="${{ env.kernel_only }}" \
+          KERNEL_CONFIGURE="${{ env.kernel_configure }}" \
+          BOOTFS_TYPE="${{ env.bootfs_type }}"\
+          COMPRESS_OUTPUTIMAGE="${{ env.compress_outputimage }}" \
+          DOWNLOAD_MIRROR="${{ env.download_mirror }}" \
+          ARMBIAN_MIRROR="${{ env.armbian_mirror }}" \
+          MAINLINE_MIRROR="${{ env.mainline_mirror }}" \
+          UBOOT_MIRROR="${{ env.uboot_mirror }}" \
+          GITHUB_MIRROR="${{ env.github_mirror }}" \
+          REGIONAL_MIRROR="${{ env.regional_mirror }}" \
+          REPOSITORY_INSTALL="${{ env.repository_install }}"

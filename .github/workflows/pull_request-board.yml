@@ -4,12 +4,11 @@ on:
   pull_request:
     types: [ opened, edited, reopened, synchronize ]
     paths:
-      - "configs/board-**"
-      - ".github/workflows/pull_request-board.yml"
+      - "configs/board-**.conf"
 
 # Allow to stop obsolete workflows
 concurrency:
-  group: ci-buildtrain-pr-all-${{ github.ref }}-1
+  group: ci-buildtrain-pr-board-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
@@ -76,8 +75,8 @@ jobs:
           mv *.img ${IMAGE}.img
           mv *.txt ${IMAGE}.txt
           rm *.sha
-
-          echo "::set-output name=image::$IMAGE"
+          
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
       - name: Compressing Image
         run: |
