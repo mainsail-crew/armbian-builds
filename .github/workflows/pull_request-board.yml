@@ -91,7 +91,7 @@ jobs:
           fetch-depth: 1
 
       - name: Build image
-        uses: ./armbian-builds/actions/build-image-docker
+        uses: ./actions/build-image-docker
         with:
           configfile: ${{ matrix.configfile }}
 
@@ -161,7 +161,7 @@ jobs:
           fetch-depth: 1
 
       - name: Build image
-        uses: ./armbian-builds/actions/build-orangepi-image
+        uses: ./actions/build-orangepi-image
         with:
           configfile: ${{ matrix.configfile }}
 
