@@ -35,7 +35,6 @@ runs:
         echo "branch=${BRANCH}" >> $GITHUB_ENV
         echo "build_desktop=${BUILD_DESKTOP}" >> $GITHUB_ENV
         echo "build_minimal=${BUILD_MINIMAL}" >> $GITHUB_ENV
-        echo "kernel_only=${KERNEL_ONLY}" >> $GITHUB_ENV
         echo "kernel_configure=${KERNEL_CONFIGURE}" >> $GITHUB_ENV
         echo "bootfs_type=${BOOTFS_TYPE}" >> $GITHUB_ENV
         echo "compress_outputimage=${COMPRESS_OUTPUTIMAGE}" >> $GITHUB_ENV
@@ -81,7 +80,6 @@ runs:
           BRANCH="${{ env.branch }}" \
           BUILD_DESKTOP="${{ env.build_desktop }}" \
           BUILD_MINIMAL="${{ env.build_minimal }}" \
-          KERNEL_ONLY="${{ env.kernel_only }}" \
           KERNEL_CONFIGURE="${{ env.kernel_configure }}" \
           BOOTFS_TYPE="${{ env.bootfs_type }}"\
           COMPRESS_OUTPUTIMAGE="${{ env.compress_outputimage }}" \
