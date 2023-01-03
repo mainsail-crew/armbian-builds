@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
+  setup-armbian:
     name: Create Matrix Armbian
     runs-on: ubuntu-latest
     steps:
@@ -76,14 +76,14 @@ jobs:
       configfiles: ${{ steps.set-matrix.outputs.result }}
 
 
-  build:
+  build-armbian:
     name: Build Armbian Images
-    needs: [ setup ]
+    needs: [ setup-armbian ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup.outputs.configfiles) }}
+        configfile: ${{ fromJson(needs.setup-armbian.outputs.configfiles) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
