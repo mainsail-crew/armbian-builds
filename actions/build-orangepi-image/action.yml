@@ -1,6 +1,6 @@
-name: 'Armbian/build'
+name: 'OrangePI/build'
 author: 'Stefan Dej'
-description: 'Armbian Linux build framework from amazingfate/armbian-compile-action'
+description: 'Build orangepi-os images'
 inputs:
   configfile:
     description: 'Config file name'
@@ -9,19 +9,14 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get more space
-      uses: easimon/maximize-build-space@master
-      with:
-        root-reserve-mb: 30720
-        swap-size-mb: 1024
-        remove-dotnet: 'true'
-        remove-android: 'true'
-
     - name: Checkout Repository
       uses: actions/checkout@v3
       with:
         fetch-depth: 1
         path: build-configs
+
+    - name: Runner prepare
+      uses: ./build-configs/actions/runner-prepare
 
     - name: Read configs
       id: config
@@ -32,6 +27,9 @@ runs:
         
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
+        
+        echo "orangepi_repository=${ORANGEPI_REPOSITORY}" >> $GITHUB_OUTPUT
+        echo "orangepi_branch=${ORANGEPI_BRANCH}" >> $GITHUB_OUTPUT
         
         echo "release=${RELEASE}" >> $GITHUB_ENV
         echo "branch=${BRANCH}" >> $GITHUB_ENV
@@ -60,16 +58,24 @@ runs:
         ref: ${{ steps.config.outputs.armbian_branch }}
         path: build
 
+    - name: Checkout Custom Copy Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        repository: ${{ steps.config.outputs.orangepi_repository }}
+        ref: ${{ steps.config.outputs.orangepi_branch }}
+        path: custom-repo
+
+    - name: Copy Custom Repository to armbian/build
+      shell: bash
+      run: |
+        cp -R ./custom-repo/* ./build/
+
     - name: Build Image
       shell: bash
       run: |
         cd ./build
-        sed -i -e 's/-it//g' ./config/templates/config-docker.conf
-        docker_tag=$(cat VERSION|cut -d "-" -f1)
-        docker_tag_in_repo=${docker_tag:0:5}
-        docker pull ghcr.io/armbian/build:${docker_tag_in_repo}-amd64
-        docker image tag ghcr.io/armbian/build:${docker_tag_in_repo}-amd64 armbian:$(cat VERSION)
-        ./compile.sh docker \
+        ./compile.sh \
           BOARD="${{ env.board }}" \
           RELEASE="${{ env.release }}" \
           BRANCH="${{ env.branch }}" \
@@ -86,3 +92,10 @@ runs:
           GITHUB_MIRROR="${{ env.github_mirror }}" \
           REGIONAL_MIRROR="${{ env.regional_mirror }}" \
           REPOSITORY_INSTALL="${{ env.repository_install }}"
+
+    - name: Fix userrights
+      shell: bash
+      run: |
+        WORKSPACE=$(echo ${{ github.workspace }})
+        sudo chown -R $USER:$USER $WORKSPACE/build/. || true
+        sudo df
