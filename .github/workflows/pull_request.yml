@@ -1,4 +1,4 @@
-name: PR - Build specific Board
+name: PR - Build Images
 on:
   # build images in PRs with changed board config files
   pull_request:
@@ -40,7 +40,7 @@ jobs:
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
 
       - name: Create Matrix OrangePi
-        id: set-matrix-all-armbian
+        id: set-matrix-all-orangepi
         run: |
           JSON=$(find ${{ github.workspace }}/configs-orangepi -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
