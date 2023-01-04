@@ -61,7 +61,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const { JSON_STRING } = process.env
+            const { JSON_STRING, ALL_FILES } = process.env
             const array = JSON.parse(JSON_STRING)
             const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs-orangepi/config-default'))
             const filteredArray = array.filter((file) => file.startsWith('configs-orangepi/board-') && file.endsWith('.conf'))
