@@ -81,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup-armbian.outputs.configfiles-armbian) }}
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
