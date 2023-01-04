@@ -23,16 +23,6 @@ jobs:
         with:
           format: 'json'
 
-      - name: Check All or Boards only
-        uses: actions/github-script@v6
-        env:
-          JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
-        with:
-          result-encoding: boolean
-          script: |
-            const { JSON_STRING } = process.env
-        
-
       - name: Create Matrix Armbian
         id: set-matrix-all-armbian
         run: |
