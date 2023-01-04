@@ -149,7 +149,7 @@ jobs:
   build-orangepi:
     name: Build OrangePI-OS Images
     needs: [ setup-orangepi ]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
