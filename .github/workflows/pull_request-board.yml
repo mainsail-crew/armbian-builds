@@ -22,7 +22,7 @@ jobs:
 
       - name: Get changed Files
         id: changed-files
-        uses: jitterbit/get-changed-files@v1
+        uses: Ana06/get-changed-files@v2.2.0
         with:
           format: 'json'
 
@@ -53,7 +53,7 @@ jobs:
 
       - name: Get changed Files
         id: changed-files
-        uses: jitterbit/get-changed-files@v1
+        uses: Ana06/get-changed-files@v2.2.0
         with:
           format: 'json'
 
