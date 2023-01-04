@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   setup:
-    name: Create Matrix Armbian
+    name: Create Matrix
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
           JSON=$(find ${{ github.workspace }}/configs-orangepi -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
 
-      - name: Create Matrix Changed Armbian
+      - name: Create Matrix Armbian
         id: set-matrix-armbian
         uses: actions/github-script@v6
         env:
@@ -46,13 +46,13 @@ jobs:
           script: |
             const { JSON_STRING, ALL_FILES } = process.env
             const array = JSON.parse(JSON_STRING)
-            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs/config-default')))
+            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs/config-default'))
             const filteredArray = array.filter((file) => file.startsWith('configs/board-') && file.endsWith('.conf'))
             const outputArray = filteredArray.map((file) => file.slice(14, file.length - 5))
             
             return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
 
-      - name: Create Matrix Changed OrangePi
+      - name: Create Matrix OrangePi
         id: set-matrix-orangepi
         uses: actions/github-script@v6
         env:
@@ -63,7 +63,7 @@ jobs:
           script: |
             const { JSON_STRING } = process.env
             const array = JSON.parse(JSON_STRING)
-            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs-orangepi/config-default')))
+            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs-orangepi/config-default'))
             const filteredArray = array.filter((file) => file.startsWith('configs-orangepi/board-') && file.endsWith('.conf'))
             const outputArray = filteredArray.map((file) => file.slice(23, file.length - 5))
             
