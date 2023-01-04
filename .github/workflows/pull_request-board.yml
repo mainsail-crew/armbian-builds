@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup-armbian:
+  setup:
     name: Create Matrix Armbian
     runs-on: ubuntu-latest
     steps:
@@ -26,8 +26,8 @@ jobs:
         with:
           format: 'json'
 
-      - name: Create Matrix JS
-        id: set-matrix
+      - name: Create Matrix JS Armbian
+        id: set-matrix-armbian
         uses: actions/github-script@v6
         env:
           JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
@@ -41,24 +41,8 @@ jobs:
             
             return JSON.stringify(outputArray)
 
-    outputs:
-      configfiles: ${{ steps.set-matrix.outputs.result }}
-
-  setup-orangepi:
-    name: Create Matrix Orangepi-OS
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Get changed Files
-        id: changed-files
-        uses: Ana06/get-changed-files@v2.2.0
-        with:
-          format: 'json'
-
-      - name: Create Matrix JS
-        id: set-matrix
+      - name: Create Matrix JS OrangePi
+        id: set-matrix-orangepi
         uses: actions/github-script@v6
         env:
           JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
@@ -73,17 +57,18 @@ jobs:
             return JSON.stringify(outputArray)
 
     outputs:
-      configfiles: ${{ steps.set-matrix.outputs.result }}
+      configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
+      configfiles-orangepi: ${{ steps.set-matrix-orangepi.outputs.result }}
 
 
   build-armbian:
     name: Build Armbian Images
-    needs: [ setup-armbian ]
+    needs: [ setup ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup-armbian.outputs.configfiles) }}
+        configfile: ${{ fromJson(needs.setup-armbian.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -148,12 +133,12 @@ jobs:
 
   build-orangepi:
     name: Build OrangePI-OS Images
-    needs: [ setup-orangepi ]
+    needs: [ setup ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup-orangepi.outputs.configfiles) }}
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
