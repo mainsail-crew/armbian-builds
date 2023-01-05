@@ -17,13 +17,19 @@ runs:
         remove-dotnet: 'true'
         remove-android: 'true'
 
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        path: build-configs
+
     - name: Read configs
       id: config
       shell: bash
       run: |
         ls ./
-        source ./configs/config-default.conf
-        source ./configs/board-${{ inputs.configfile }}.conf
+        source ./build-configs/configs/config-default.conf
+        source ./build-configs/configs/board-${{ inputs.configfile }}.conf
         
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT

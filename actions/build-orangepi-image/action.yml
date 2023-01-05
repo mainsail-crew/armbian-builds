@@ -12,12 +12,18 @@ runs:
     - name: Runner prepare
       uses: ./actions/runner-prepare
 
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        path: build-configs
+
     - name: Read configs
       id: config
       shell: bash
       run: |
-        source ./configs-orangepi/config-default.conf
-        source ./configs-orangepi/board-${{ inputs.configfile }}.conf
+        source ./build-configs/configs-orangepi/config-default.conf
+        source ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf
         
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
