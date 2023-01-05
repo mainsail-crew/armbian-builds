@@ -12,19 +12,12 @@ runs:
     - name: Runner prepare
       uses: meteyou/armbian-builds/actions/runner-prepare@test-self-hosted
 
-    - name: Checkout meteyou/armbian-builds
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        repository: meteyou/armbian-builds
-        path: build-configs
-
     - name: Read configs
       id: config
       shell: bash
       run: |
-        source ./build-configs/configs/config-default.conf
-        source ./build-configs/configs/board-${{ inputs.configfile }}.conf
+        source ./configs/config-default.conf
+        source ./configs/board-${{ inputs.configfile }}.conf
         
         echo "::set-output name=armbian_repository::${ARMBIAN_REPOSITORY}"
         echo "::set-output name=armbian_branch::${ARMBIAN_BRANCH}"

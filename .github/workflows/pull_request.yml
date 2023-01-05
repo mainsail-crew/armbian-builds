@@ -96,7 +96,7 @@ jobs:
       - name: Rename Files
         id: rename-files
         run: |
-
+          ls ./
           source ./configs/config-default.conf
           source ./configs/board-${{ matrix.configfile }}.conf
 
