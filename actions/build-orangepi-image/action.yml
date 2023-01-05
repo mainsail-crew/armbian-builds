@@ -9,21 +9,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        path: build-configs
-
     - name: Runner prepare
-      uses: ./build-configs/actions/runner-prepare
+      uses: ./actions/runner-prepare
 
     - name: Read configs
       id: config
       shell: bash
       run: |
-        source ./build-configs/configs-orangepi/config-default.conf
-        source ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf
+        source ./configs-orangepi/config-default.conf
+        source ./configs-orangepi/board-${{ inputs.configfile }}.conf
         
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT

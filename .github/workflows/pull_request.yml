@@ -75,7 +75,7 @@ jobs:
 
 
   build-armbian:
-    name: Build Armbian Images
+    name: Armbian
     needs: [ setup ]
     runs-on: ubuntu-latest
     strategy:
@@ -97,8 +97,8 @@ jobs:
         id: rename-files
         run: |
 
-          source ./build-configs/configs/config-default.conf
-          source ./build-configs/configs/board-${{ matrix.configfile }}.conf
+          source ./configs/config-default.conf
+          source ./configs/board-${{ matrix.configfile }}.conf
 
           NOW="$(date +"%Y-%m-%d")"
           VERSION=$(cat ./build/VERSION)
@@ -145,7 +145,7 @@ jobs:
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
 
   build-orangepi:
-    name: Build OrangePI-OS Images
+    name: OPI
     needs: [ setup ]
     runs-on: ubuntu-latest
     strategy:
@@ -167,8 +167,8 @@ jobs:
         id: rename-files
         run: |
 
-          source ./build-configs/configs-orangepi/config-default.conf
-          source ./build-configs/configs-orangepi/board-${{ matrix.configfile }}.conf
+          source ./configs-orangepi/config-default.conf
+          source ./configs-orangepi/board-${{ matrix.configfile }}.conf
 
           NOW="$(date +"%Y-%m-%d")"
           VERSION=$(cat ./build/VERSION)
