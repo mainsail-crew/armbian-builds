@@ -27,6 +27,7 @@ runs:
       id: config
       shell: bash
       run: |
+        ls ./
         source ./build-configs/configs/config-default.conf
         source ./build-configs/configs/board-${{ inputs.configfile }}.conf
         
