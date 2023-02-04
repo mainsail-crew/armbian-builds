@@ -107,10 +107,20 @@ jobs:
 
           WORKSPACE=$(echo ${{ github.workspace }})
           cd $WORKSPACE/build/output/images/
+          
+          echo "::group::Images output before rename"
+          ls -lt
+          echo "::endgroup::"
 
           mv *.img ${IMAGE}.img
           mv *.txt ${IMAGE}.txt
           rm *.sha
+          
+          echo "::group::Images output after rename"
+          ls -lt
+          echo "::endgroup::"
+          
+          echo "::debug::Filename will be: ${IMAGE}"
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
@@ -118,7 +128,11 @@ jobs:
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
           cd $WORKSPACE/build/output/images/
-          xz -efkvz ${{ steps.rename-files.outputs.image }}.img
+          xz -efkvzt ${{ steps.rename-files.outputs.image }}.img
+          
+          echo "::group::Images output after compress"
+          ls -lt
+          echo "::endgroup::"
 
       - name: Calculating checksums
         run: |
