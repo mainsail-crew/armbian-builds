@@ -84,4 +84,5 @@ runs:
       run: |
         WORKSPACE=$(echo ${{ github.workspace }})
         sudo chown -R $USER:$USER $WORKSPACE/build || true
+        sudo chmod 0777 -R $WORKSPACE/build || true
         sudo df
