@@ -89,7 +89,6 @@ jobs:
           fetch-depth: 1
 
       - name: Build image
-        # uses: ./actions/build-image-docker
         uses: ./actions/build-image
         with:
           configfile: ${{ matrix.configfile }}
