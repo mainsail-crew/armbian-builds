@@ -128,7 +128,7 @@ jobs:
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
           cd $WORKSPACE/build/output/images/
-          xz -zkf --format=xz ${{ steps.rename-files.outputs.image }}.img
+          xz -zkf --format=xz ${{ steps.rename-files.outputs.image }}.img || true
           
           echo "::group::Images output after compress"
           ls -lt
