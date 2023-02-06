@@ -247,7 +247,7 @@ jobs:
 
   cleanup:
     name: Cleanup BuildTrain
-    needs: [release, build]
+    needs: [release, build-armbian, build-orangepi]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
