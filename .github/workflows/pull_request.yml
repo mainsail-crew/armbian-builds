@@ -1,0 +1,243 @@
+name: PR - Build Images
+on:
+  # build images in PRs with changed board config files
+  pull_request:
+    types: [ opened, edited, reopened, synchronize ]
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-pr-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Create Matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get changed Files
+        id: changed-files
+        uses: Ana06/get-changed-files@v2.2.0
+        with:
+          format: 'json'
+
+      - name: Create Matrix Armbian
+        id: set-matrix-all-armbian
+        run: |
+          JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
+          echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
+
+      - name: Create Matrix OrangePi
+        id: set-matrix-all-orangepi
+        run: |
+          JSON=$(find ${{ github.workspace }}/configs-orangepi -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
+          echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
+
+      - name: Create Matrix Armbian
+        id: set-matrix-armbian
+        uses: actions/github-script@v6
+        env:
+          JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
+          ALL_FILES: ${{ steps.set-matrix-all-armbian.outputs.configfiles }}
+        with:
+          result-encoding: string
+          script: |
+            const { JSON_STRING, ALL_FILES } = process.env
+            const array = JSON.parse(JSON_STRING)
+            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs/config-default'))
+            const filteredArray = array.filter((file) => file.startsWith('configs/board-') && file.endsWith('.conf'))
+            const outputArray = filteredArray.map((file) => file.slice(14, file.length - 5))
+            
+            return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
+
+      - name: Create Matrix OrangePi
+        id: set-matrix-orangepi
+        uses: actions/github-script@v6
+        env:
+          JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
+          ALL_FILES: ${{ steps.set-matrix-all-orangepi.outputs.configfiles }}
+        with:
+          result-encoding: string
+          script: |
+            const { JSON_STRING, ALL_FILES } = process.env
+            const array = JSON.parse(JSON_STRING)
+            const otherChangedFiles = array.filter((file) => !file.startsWith('configs') || file.startsWith('configs-orangepi/config-default'))
+            const filteredArray = array.filter((file) => file.startsWith('configs-orangepi/board-') && file.endsWith('.conf'))
+            const outputArray = filteredArray.map((file) => file.slice(23, file.length - 5))
+            
+            return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
+
+    outputs:
+      configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
+      configfiles-orangepi: ${{ steps.set-matrix-orangepi.outputs.result }}
+
+
+  build-armbian:
+    name: Armbian
+    needs: [ setup ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Build image
+        uses: ./actions/build-image
+        with:
+          configfile: ${{ matrix.configfile }}
+
+      - name: Rename Files
+        id: rename-files
+        run: |
+          ls ./
+          source ./build-configs/configs/config-default.conf
+          source ./build-configs/configs/board-${{ matrix.configfile }}.conf
+
+          NOW="$(date +"%Y-%m-%d")"
+          VERSION=$(cat ./build/VERSION)
+          IMAGE="${NOW}-armbian-${VERSION}-${{ matrix.configfile }}"
+
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          
+          echo "::group::Images output before rename"
+          ls -lt
+          echo "::endgroup::"
+
+          mv *.img ${IMAGE}.img
+          mv *.txt ${IMAGE}.txt
+          rm *.sha
+          
+          echo "::group::Images output after rename"
+          ls -lt
+          echo "::endgroup::"
+          
+          echo "::debug::Filename will be: ${IMAGE}"
+          
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Compressing Image
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          xz -zkf --format=xz ${{ steps.rename-files.outputs.image }}.img || true
+          
+          echo "::group::Images output after compress"
+          ls -lt
+          echo "::endgroup::"
+
+      - name: Calculating checksums
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          sha256sum ${{ steps.rename-files.outputs.image }}.img > ${{ steps.rename-files.outputs.image }}.img.sha256
+          sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Compressed Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
+
+      - name: Upload Compressed Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
+
+  build-orangepi:
+    name: OPI
+    needs: [ setup ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Build image
+        uses: ./actions/build-orangepi-image
+        with:
+          configfile: ${{ matrix.configfile }}
+
+      - name: Rename Files
+        id: rename-files
+        run: |
+
+          source ./build-configs/configs-orangepi/config-default.conf
+          source ./build-configs/configs-orangepi/board-${{ matrix.configfile }}.conf
+
+          NOW="$(date +"%Y-%m-%d")"
+          VERSION=$(cat ./build/VERSION)
+          IMAGE="${NOW}-orangepi-${VERSION}-${{ matrix.configfile }}"
+
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          
+          echo "::group::Images output before rename"
+          ls -lt
+          echo "::endgroup::"
+
+          mv *.img ${IMAGE}.img
+          mv *.txt ${IMAGE}.txt
+          rm *.sha
+          
+          echo "::group::Images output after rename"
+          ls -lt
+          echo "::endgroup::"
+          
+          echo "::debug::Filename will be: ${IMAGE}"
+          
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Compressing Image
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          xz -zkf --format=xz ${{ steps.rename-files.outputs.image }}.img || true
+          
+          echo "::group::Images output after compress"
+          ls -lt
+          echo "::endgroup::"
+
+      - name: Calculating checksums
+        run: |
+          WORKSPACE=$(echo ${{ github.workspace }})
+          cd $WORKSPACE/build/output/images/
+          sha256sum ${{ steps.rename-files.outputs.image }}.img > ${{ steps.rename-files.outputs.image }}.img.sha256
+          sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Compressed Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
+
+      - name: Upload Compressed Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
+
+      - name: Upload Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.rename-files.outputs.image }}.img.sha256
+          path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
