@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
+        configfile: ${{ needs.setup.outputs.configfiles-armbian }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -176,7 +176,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
+        configfile: ${{ needs.setup.outputs.configfiles-orangepi }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
