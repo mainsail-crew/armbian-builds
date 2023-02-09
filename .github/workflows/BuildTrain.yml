@@ -46,8 +46,8 @@ jobs:
           echo "::endgroup::"
 
     outputs:
-      configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
-      configfiles-orangepi: ${{ steps.set-matrix-orangepi.outputs.result }}
+      configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.configfiles }}
+      configfiles-orangepi: ${{ steps.set-matrix-orangepi.outputs.configfiles }}
 
   release:
     name: Create Release
