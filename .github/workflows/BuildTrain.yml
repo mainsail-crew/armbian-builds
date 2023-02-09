@@ -32,12 +32,18 @@ jobs:
         run: |
           JSON=$(find ${{ github.workspace }}/configs -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
+          echo "::group::Matrix Armbian"
+          echo "${JSON}"
+          echo "::endgroup::"
 
       - name: Create Matrix OrangePi
         id: set-matrix-orangepi
         run: |
           JSON=$(find ${{ github.workspace }}/configs-orangepi -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
+          echo "::group::Matrix OrangePi"
+          echo "${JSON}"
+          echo "::endgroup::"
 
     outputs:
       configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
