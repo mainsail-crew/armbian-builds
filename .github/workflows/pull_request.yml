@@ -195,9 +195,7 @@ jobs:
           ls -lt
           echo "::endgroup::"
 
-          mv *.img ${IMAGE}.img
-          mv *.txt ${IMAGE}.txt
-          rm *.sha
+          mv */*.img ./${IMAGE}.img
           
           echo "::group::Images output after rename"
           ls -lt
