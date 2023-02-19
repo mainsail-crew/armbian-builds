@@ -76,7 +76,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./compile.sh \
+        ./build.sh \
           BOARD="${{ env.board }}" \
           RELEASE="${{ env.release }}" \
           BRANCH="${{ env.branch }}" \
