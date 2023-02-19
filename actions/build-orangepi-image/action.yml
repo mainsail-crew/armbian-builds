@@ -80,10 +80,9 @@ runs:
           BOARD="${{ env.board }}" \
           RELEASE="${{ env.release }}" \
           BRANCH="${{ env.branch }}" \
-          BUILD_ONLY="${{ env.build_only }}" \
+          BUILD_ONLY=${{ env.build_only }} \
           BUILD_DESKTOP="${{ env.build_desktop }}" \
           BUILD_MINIMAL="${{ env.build_minimal }}" \
-          KERNEL_ONLY="${{ env.kernel_only }}" \
           KERNEL_CONFIGURE="${{ env.kernel_configure }}" \
           BOOTFS_TYPE="${{ env.bootfs_type }}"\
           COMPRESS_OUTPUTIMAGE="${{ env.compress_outputimage }}" \
