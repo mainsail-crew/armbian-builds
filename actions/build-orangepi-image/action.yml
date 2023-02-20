@@ -33,23 +33,13 @@ runs:
         
         echo "release=${RELEASE}" >> $GITHUB_ENV
         echo "branch=${BRANCH}" >> $GITHUB_ENV
-        echo "build_only=${BUILD_ONLY}" >> $GITHUB_ENV
         echo "build_desktop=${BUILD_DESKTOP}" >> $GITHUB_ENV
         echo "build_minimal=${BUILD_MINIMAL}" >> $GITHUB_ENV
-        echo "kernel_only=${KERNEL_ONLY}" >> $GITHUB_ENV
         echo "kernel_configure=${KERNEL_CONFIGURE}" >> $GITHUB_ENV
         echo "bootfs_type=${BOOTFS_TYPE}" >> $GITHUB_ENV
         echo "compress_outputimage=${COMPRESS_OUTPUTIMAGE}" >> $GITHUB_ENV
         echo "repository_install=${REPOSITORY_INSTALL}" >> $GITHUB_ENV
-        echo "no_apt_cacher=${NO_APT_CACHER}" >> $GITHUB_ENV
         echo "board=${BOARD}" >> $GITHUB_ENV
-        
-        echo "download_mirror=${DOWNLOAD_MIRROR}" >> $GITHUB_ENV
-        echo "armbian_mirror=${ARMBIAN_MIRROR}" >> $GITHUB_ENV
-        echo "mainline_mirror=${MAINLINE_MIRROR}" >> $GITHUB_ENV
-        echo "uboot_mirror=${UBOOT_MIRROR}" >> $GITHUB_ENV
-        echo "github_mirror=${GITHUB_MIRROR}" >> $GITHUB_ENV
-        echo "regional_mirror=${REGIONAL_MIRROR}" >> $GITHUB_ENV
 
     - name: Checkout armbian Repository
       uses: actions/checkout@v3
@@ -76,23 +66,16 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./compile.sh \
-          BOARD="${{ env.board }}" \
-          RELEASE="${{ env.release }}" \
-          BRANCH="${{ env.branch }}" \
-          BUILD_ONLY="${{ env.build_only }}" \
-          BUILD_DESKTOP="${{ env.build_desktop }}" \
-          BUILD_MINIMAL="${{ env.build_minimal }}" \
-          KERNEL_ONLY="${{ env.kernel_only }}" \
-          KERNEL_CONFIGURE="${{ env.kernel_configure }}" \
-          BOOTFS_TYPE="${{ env.bootfs_type }}"\
-          COMPRESS_OUTPUTIMAGE="${{ env.compress_outputimage }}" \
-          DOWNLOAD_MIRROR="${{ env.download_mirror }}" \
-          ARMBIAN_MIRROR="${{ env.armbian_mirror }}" \
-          MAINLINE_MIRROR="${{ env.mainline_mirror }}" \
-          UBOOT_MIRROR="${{ env.uboot_mirror }}" \
-          GITHUB_MIRROR="${{ env.github_mirror }}" \
-          REGIONAL_MIRROR="${{ env.regional_mirror }}" \
+        ./build.sh \
+          BOARD=${{ env.board }} \
+          RELEASE=${{ env.release }} \
+          BRANCH=${{ env.branch }} \
+          BUILD_OPT=image \
+          BUILD_DESKTOP=${{ env.build_desktop }} \
+          BUILD_MINIMAL=${{ env.build_minimal }} \
+          KERNEL_CONFIGURE=${{ env.kernel_configure }} \
+          BOOTFS_TYPE=${{ env.bootfs_type }}\
+          COMPRESS_OUTPUTIMAGE=${{ env.compress_outputimage }} \
           REPOSITORY_INSTALL="${{ env.repository_install }}"
 
     - name: Fix userrights
