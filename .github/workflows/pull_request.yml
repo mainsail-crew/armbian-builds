@@ -77,7 +77,7 @@ jobs:
   build-armbian:
     name: Armbian
     needs: [ setup ]
-    runs-on: self-hosted
+    runs-on: oracle
     strategy:
       fail-fast: false
       matrix:

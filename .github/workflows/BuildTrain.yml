@@ -51,7 +51,7 @@ jobs:
 
   release:
     name: Create Release
-    runs-on: self-hosted
+    runs-on: oracle
     outputs:
       id: ${{ steps.release.outputs.id }}
       tag_name: ${{ steps.time.outputs.time }}
