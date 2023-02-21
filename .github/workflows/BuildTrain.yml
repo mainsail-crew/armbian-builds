@@ -51,7 +51,7 @@ jobs:
 
   release:
     name: Create Release
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       id: ${{ steps.release.outputs.id }}
       tag_name: ${{ steps.time.outputs.time }}
