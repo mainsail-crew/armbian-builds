@@ -61,6 +61,7 @@ runs:
       run: |
         cd ./build
         ./compile.sh \
+          LIB_TAG="${{ env.armbian_branch }}" \
           BOARD="${{ env.board }}" \
           RELEASE="${{ env.release }}" \
           BRANCH="${{ env.branch }}" \
