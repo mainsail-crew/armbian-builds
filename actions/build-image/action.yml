@@ -1,13 +1,13 @@
-name: 'Armbian/build'
-author: 'Stefan Dej'
-description: 'Build armbian images'
+name: "Armbian/build"
+author: "Stefan Dej"
+description: "Build armbian images"
 inputs:
   configfile:
-    description: 'Config file name'
+    description: "Config file name"
     required: true
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Runner prepare
       uses: ./actions/runner-prepare
@@ -24,10 +24,10 @@ runs:
       run: |
         source ./build-configs/configs/config-default.conf
         source ./build-configs/configs/board-${{ inputs.configfile }}.conf
-        
+
         echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
-        
+
         echo "release=${RELEASE}" >> $GITHUB_ENV
         echo "branch=${BRANCH}" >> $GITHUB_ENV
         echo "build_only=${BUILD_ONLY}" >> $GITHUB_ENV
@@ -40,7 +40,7 @@ runs:
         echo "repository_install=${REPOSITORY_INSTALL}" >> $GITHUB_ENV
         echo "no_apt_cacher=${NO_APT_CACHER}" >> $GITHUB_ENV
         echo "board=${BOARD}" >> $GITHUB_ENV
-        
+
         echo "download_mirror=${DOWNLOAD_MIRROR}" >> $GITHUB_ENV
         echo "armbian_mirror=${ARMBIAN_MIRROR}" >> $GITHUB_ENV
         echo "mainline_mirror=${MAINLINE_MIRROR}" >> $GITHUB_ENV
@@ -55,6 +55,13 @@ runs:
         repository: ${{ steps.config.outputs.armbian_repository }}
         ref: ${{ steps.config.outputs.armbian_branch }}
         path: build
+
+    - name: Copy userpatches
+      shell: bash
+      run: |
+        ls -l
+        cp -r ./build-configs/userpatches ./build
+        ls -l ./build
 
     - name: Build Image
       shell: bash
