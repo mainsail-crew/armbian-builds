@@ -124,7 +124,6 @@ jobs:
           cd $WORKSPACE/build/output/images/
           mv *.img armbian-${{ matrix.configfile }}.img
           mv *.txt armbian-${{ matrix.configfile }}.txt
-          rm *.sha
 
       - name: Compressing Image
         run: |

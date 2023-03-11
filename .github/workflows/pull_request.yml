@@ -113,7 +113,6 @@ jobs:
 
           mv *.img ${IMAGE}.img
           mv *.txt ${IMAGE}.txt
-          rm *.sha
           
           echo "::group::Images output after rename"
           ls -lt
