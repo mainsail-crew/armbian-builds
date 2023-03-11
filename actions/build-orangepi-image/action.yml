@@ -54,8 +54,8 @@ runs:
         mkdir -p ./build/userpatches
         cp ./build-configs/configs-orangepi/config-default.conf ./build/userpatches/config-settings.conf
         cat ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-settings.conf
-        echo "::group::Output config-example.conf"
-        cat ./build/userpatches/config-example.conf
+        echo "::group::Output config-settings.conf"
+        cat ./build/userpatches/config-settings.conf
         echo "::endgroup::"
 
     - name: Build Image
