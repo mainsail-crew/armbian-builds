@@ -52,8 +52,8 @@ runs:
       run: |
         cp -R ./orangepi-build/* ./build/
         mkdir -p ./build/userpatches
-        cp ./build-configs/configs-orangepi/config-default.conf ./build/userpatches/config-example.conf
-        cat ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-example.conf
+        cp ./build-configs/configs-orangepi/config-default.conf ./build/userpatches/config-settings.conf
+        cat ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-settings.conf
         echo "::group::Output config-example.conf"
         cat ./build/userpatches/config-example.conf
         echo "::endgroup::"
@@ -62,7 +62,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./build.sh BUILD_OPT=image
+        ./build.sh settings
 
     - name: Fix userrights
       shell: bash
