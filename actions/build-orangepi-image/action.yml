@@ -62,7 +62,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./build.sh
+        ./build.sh BUILD_OPT=image
 
     - name: Fix userrights
       shell: bash
