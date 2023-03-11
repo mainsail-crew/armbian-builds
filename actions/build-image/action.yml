@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         mkdir -p ./build/userpatches
-        cp ./build-configs/configs/config-default.conf ./build/userpatches/config-armbian.conf
+        cp ./build-configs/configs/config-default.conf ./build/userpatches/config-default.conf
         cat ./build-configs/configs/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-default.conf
         echo "::group::Output config-default.conf"
         cat ./build/userpatches/config-default.conf

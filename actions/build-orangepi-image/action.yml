@@ -53,6 +53,10 @@ runs:
         cp -R ./orangepi-build/* ./build/
         mkdir -p ./build/userpatches
         cp ./build-configs/configs-orangepi/config-default.conf ./build/userpatches/config-default.conf
+        cat ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-default.conf
+        echo "::group::Output config-default.conf"
+        cat ./build/userpatches/config-default.conf
+        echo "::endgroup::"
 
     - name: Build Image
       shell: bash
