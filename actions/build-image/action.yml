@@ -50,7 +50,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        ./compile.sh armbian
+        ./compile.sh 
 
     - name: Fix userrights
       shell: bash
