@@ -50,7 +50,9 @@ jobs:
             const filteredArray = array.filter((file) => file.startsWith('configs/board-') && file.endsWith('.conf'))
             const outputArray = filteredArray.map((file) => file.slice(14, file.length - 5))
             
-            return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
+            return ALL_FILES
+            
+            //return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
 
       - name: Create Matrix OrangePi
         id: set-matrix-orangepi
@@ -67,7 +69,9 @@ jobs:
             const filteredArray = array.filter((file) => file.startsWith('configs-orangepi/board-') && file.endsWith('.conf'))
             const outputArray = filteredArray.map((file) => file.slice(23, file.length - 5))
             
-            return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
+            return ALL_FILES
+            
+            //return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
 
     outputs:
       configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
