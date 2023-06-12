@@ -70,8 +70,8 @@ jobs:
             return otherChangedFiles.length ? ALL_FILES : JSON.stringify(outputArray)
 
     outputs:
-      configfiles-armbian: ${{ steps.set-matrix-armbian.outputs.result }}
-      configfiles-orangepi: ${{ steps.set-matrix-orangepi.outputs.result }}
+      configfiles-armbian: ${{ steps.set-matrix-all-armbian.outputs.result }}
+      configfiles-orangepi: ${{ steps.set-matrix-all-orangepi.outputs.result }}
 
 
   build-armbian:
