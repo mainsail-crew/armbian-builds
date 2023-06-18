@@ -124,7 +124,6 @@ jobs:
           cd $WORKSPACE/build/output/images/
           mv *.img armbian-${{ matrix.configfile }}.img
           mv *.txt armbian-${{ matrix.configfile }}.txt
-          rm *.sha
 
       - name: Compressing Image
         run: |
@@ -192,9 +191,7 @@ jobs:
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
           cd $WORKSPACE/build/output/images/
-          mv *.img orangepi-${{ matrix.configfile }}.img
-          mv *.txt orangepi-${{ matrix.configfile }}.txt
-          rm *.sha
+          mv */*.img ./orangepi-${{ matrix.configfile }}.img
 
       - name: Compressing Image
         run: |
@@ -227,16 +224,6 @@ jobs:
         with:
           release_id: ${{ needs.release.outputs.id }}
           file: ./build/output/images/*.sha256
-          draft: true
-
-      - name: Upload Config to Release
-        if: needs.release.outputs.id != ''
-        uses: xresloader/upload-to-github-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ needs.release.outputs.id }}
-          file: ./build/output/images/*.txt
           draft: true
 
   finish:
