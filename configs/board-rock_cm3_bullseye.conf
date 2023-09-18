@@ -1,1 +1,2 @@
 BOARD=rock-3a
+ARMBIAN_BRANCH="main"
