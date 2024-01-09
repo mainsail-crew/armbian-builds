@@ -1,1 +1,0 @@
-BOARD=radxa-zero
