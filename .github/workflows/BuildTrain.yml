@@ -72,7 +72,7 @@ jobs:
           echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Checkout armbian Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           repository: ${{ steps.config.outputs.armbian_repository }}
@@ -88,7 +88,7 @@ jobs:
 
       - name: Get time
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2
         with:
           format: 'YYYYMMDD-HHmm'
 
