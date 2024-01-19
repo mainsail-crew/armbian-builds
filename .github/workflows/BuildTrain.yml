@@ -109,9 +109,10 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          path: build-configs
 
       - name: Build image
         uses: ./actions/build-image
