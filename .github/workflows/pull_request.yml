@@ -88,12 +88,13 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          path: build-configs
 
       - name: Build image
-        uses: ./actions/build-image
+        uses: ./build-configs/actions/build-image
         with:
           configfile: ${{ matrix.configfile }}
 
@@ -171,12 +172,13 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          path: build-configs
 
       - name: Build image
-        uses: ./actions/build-orangepi-image
+        uses: ./build-configs/actions/build-orangepi-image
         with:
           configfile: ${{ matrix.configfile }}
 

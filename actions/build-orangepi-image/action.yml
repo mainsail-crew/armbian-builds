@@ -9,14 +9,17 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Runner prepare
-      uses: ./actions/runner-prepare
-
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+    #- name: Runner prepare
+    #  uses: ./actions/runner-prepare
+    - name: Free Github Runner
+      uses: descriptinc/free-disk-space@main
       with:
-        fetch-depth: 1
-        path: build-configs
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true
 
     - name: Read configs
       id: config
@@ -32,7 +35,7 @@ runs:
         echo "orangepi_branch=${ORANGEPI_BRANCH}" >> $GITHUB_OUTPUT
 
     - name: Checkout armbian Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.armbian_repository }}
@@ -40,7 +43,7 @@ runs:
         path: build
 
     - name: Checkout Custom Copy Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.orangepi_repository }}
