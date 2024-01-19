@@ -61,6 +61,14 @@ runs:
         cat ./build/userpatches/config-settings.conf
         echo "::endgroup::"
 
+    - name: sed VERSION
+      shell: bash
+      run: |
+        sed -i 's/-trunk//' ./build/VERSION
+        echo "::group::Output VERSION"
+        cat ./build/VERSION
+        echo "::endgroup::"
+
     - name: Build Image
       shell: bash
       run: |
