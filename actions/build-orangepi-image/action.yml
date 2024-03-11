@@ -28,19 +28,8 @@ runs:
         source ./build-configs/configs-orangepi/config-default.conf
         source ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf
         
-        echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
-        echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
-        
         echo "orangepi_repository=${ORANGEPI_REPOSITORY}" >> $GITHUB_OUTPUT
         echo "orangepi_branch=${ORANGEPI_BRANCH}" >> $GITHUB_OUTPUT
-
-    - name: Checkout armbian Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 1
-        repository: ${{ steps.config.outputs.armbian_repository }}
-        ref: ${{ steps.config.outputs.armbian_branch }}
-        path: build
 
     - name: Checkout Custom Copy Repository
       uses: actions/checkout@v4
@@ -48,12 +37,11 @@ runs:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.orangepi_repository }}
         ref: ${{ steps.config.outputs.orangepi_branch }}
-        path: orangepi-build
+        path: build
 
-    - name: Copy OrangePI Repository to armbian/build
+    - name: Create config file
       shell: bash
       run: |
-        cp -R ./orangepi-build/* ./build/
         mkdir -p ./build/userpatches
         cp ./build-configs/configs-orangepi/config-default.conf ./build/userpatches/config-settings.conf
         cat ./build-configs/configs-orangepi/board-${{ inputs.configfile }}.conf >> ./build/userpatches/config-settings.conf
