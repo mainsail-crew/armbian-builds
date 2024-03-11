@@ -94,7 +94,7 @@ jobs:
 
       - name: Create empty release
         id: release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
@@ -236,11 +236,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish Release
-        uses: StuYarrow/publish-release@v1
+        uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          id: ${{ needs.release.outputs.id }}
+          release_id: ${{ needs.release.outputs.id }}
 
   cleanup:
     name: Cleanup BuildTrain

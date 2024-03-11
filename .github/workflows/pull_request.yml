@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get changed Files
         id: changed-files
-        uses: Ana06/get-changed-files@v2.2.0
+        uses: Ana06/get-changed-files@v2.3.0
         with:
           format: 'json'
 
@@ -37,7 +37,7 @@ jobs:
 
       - name: Create Matrix Armbian
         id: set-matrix-armbian
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
           ALL_FILES: ${{ steps.set-matrix-all-armbian.outputs.configfiles }}
@@ -56,7 +56,7 @@ jobs:
 
       - name: Create Matrix OrangePi
         id: set-matrix-orangepi
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           JSON_STRING: ${{ steps.changed-files.outputs.added_modified }}
           ALL_FILES: ${{ steps.set-matrix-all-orangepi.outputs.configfiles }}
@@ -145,19 +145,19 @@ jobs:
           sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Compressed Image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
 
       - name: Upload Compressed Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
@@ -228,19 +228,19 @@ jobs:
           sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Compressed Image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
 
       - name: Upload Compressed Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Image Checksum
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
