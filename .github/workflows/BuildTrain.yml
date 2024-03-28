@@ -2,7 +2,7 @@ name: Build Train
 on:
   # on every monday at 3:30
   schedule:
-    - cron:  '30 3 * * 1'
+    - cron: "30 3 * * 1"
 
   # build a new release on push a new config file
   push:
@@ -13,6 +13,10 @@ on:
 
   # enable manual start of this workflow
   workflow_dispatch:
+    inputs:
+      archive-release:
+        type: boolean
+        description: Release as archived version?
 
 # Allow to stop obsolete workflows
 concurrency:
@@ -67,7 +71,7 @@ jobs:
         shell: bash
         run: |
           source ./build-configs/configs/config-default.conf
-          
+
           echo "armbian_repository=${ARMBIAN_REPOSITORY}" >> $GITHUB_OUTPUT
           echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
 
@@ -90,9 +94,10 @@ jobs:
         id: time
         uses: nanzm/get-time-action@v2.0
         with:
-          format: 'YYYYMMDD-HHmm'
+          format: "YYYYMMDD-HHmm"
 
       - name: Create empty release
+        if: inputs.archive-release != 'true'
         id: release
         uses: softprops/action-gh-release@v2
         with:
@@ -100,6 +105,16 @@ jobs:
           tag_name: ${{ steps.time.outputs.time }}
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: true
+
+      - name: Create empty release
+      if: inputs.archive-release == 'true'
+      id: release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: archive-${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
+        tag_name: archive-${{ steps.time.outputs.time }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: true
 
   build-armbian:
     name: Armbian
@@ -173,7 +188,7 @@ jobs:
 
   build-orangepi:
     name: Orangepi
-    needs: [ setup, release ]
+    needs: [setup, release]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
