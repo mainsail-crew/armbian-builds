@@ -110,7 +110,6 @@ jobs:
           fi
 
       - name: Create empty release
-        needs: [release-type]
         id: release
         uses: softprops/action-gh-release@v2
         with:
