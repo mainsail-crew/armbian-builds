@@ -107,14 +107,14 @@ jobs:
           draft: true
 
       - name: Create empty release
-      if: inputs.archive-release == 'true'
-      id: release
-      uses: softprops/action-gh-release@v2
-      with:
-        name: archive-${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
-        tag_name: archive-${{ steps.time.outputs.time }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        draft: true
+        if: inputs.archive-release == 'true'
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: archive-${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
+          tag_name: archive-${{ steps.time.outputs.time }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
 
   build-armbian:
     name: Armbian
