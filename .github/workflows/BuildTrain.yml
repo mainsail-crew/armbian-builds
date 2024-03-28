@@ -96,23 +96,26 @@ jobs:
         with:
           format: "YYYYMMDD-HHmm"
 
-      - name: Create empty release
-        if: inputs.archive-release != 'true'
-        id: release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
-          tag_name: ${{ steps.time.outputs.time }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: true
+      - name: Set release type
+        id: release-type
+        run: |
+          version="${{ steps.armbian-version.outputs.version }}"
+          time="${{ steps.time.outputs.time }}"
+          if [[ ${{ inputs.archive-release }} = "true" ]]; then
+            echo "name=archive-${version}-${time}" >> $GITHUB_OUTPUT
+            echo "time=${time}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${version}-${time}" >> $GITHUB_OUTPUT
+            echo "time=${time}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create empty release
-        if: inputs.archive-release == 'true'
+        needs: [release-type]
         id: release
         uses: softprops/action-gh-release@v2
         with:
-          name: archive-${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
-          tag_name: archive-${{ steps.time.outputs.time }}
+          name: ${{ steps.release-type.outputs.name }}
+          tag_name: ${{ steps.release-type.outputs.time }}
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: true
 
