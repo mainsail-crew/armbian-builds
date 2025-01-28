@@ -16,8 +16,22 @@ runs:
         env | grep -i runner
         echo "::endgroup::"
 
+    - name: output runner arch
+      shell: bash
+      run: |
+        echo "::group::Runner ARCH"
+        echo runner.arch
+        echo "::endgroup::"
+
+    - name: output runner os
+      shell: bash
+      run: |
+        echo "::group::Runner OS"
+        echo runner.os
+        echo "::endgroup::"
+
     - name: Free Github Runner
-      if: runner.name != 'ubuntu-24.04-arm'
+      if: runner.RUNNER_ARCH != 'ARM64'
       uses: descriptinc/free-disk-space@main
       with:
         android: true
