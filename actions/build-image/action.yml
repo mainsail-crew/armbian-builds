@@ -9,6 +9,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: List runner attributes
+      shell: bash
+      run: |
+        echo "::group::Runner Attributes"
+        env | grep -i runner
+        echo "::endgroup::"
+
     - name: Free Github Runner
       if: runner.name != 'ubuntu-24.04-arm'
       uses: descriptinc/free-disk-space@main
