@@ -9,15 +9,16 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    #- name: Free Github Runner
-    #  uses: descriptinc/free-disk-space@main
-    #  with:
-    #    android: true
-    #    dotnet: true
-    #    haskell: true
-    #    large-packages: true
-    #    docker-images: true
-    #    swap-storage: true
+    - name: Free Github Runner
+      if: runner.name != 'ubuntu-24.04-arm'
+      uses: descriptinc/free-disk-space@main
+      with:
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true
 
     - name: Read configs
       id: config
