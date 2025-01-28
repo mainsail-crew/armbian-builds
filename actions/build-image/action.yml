@@ -9,17 +9,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    #- name: Runner prepare
-    #  uses: ./actions/runner-prepare
-    - name: Free Github Runner
-      uses: descriptinc/free-disk-space@main
-      with:
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        docker-images: true
-        swap-storage: true
+    #- name: Free Github Runner
+    #  uses: descriptinc/free-disk-space@main
+    #  with:
+    #    android: true
+    #    dotnet: true
+    #    haskell: true
+    #    large-packages: true
+    #    docker-images: true
+    #    swap-storage: true
 
     - name: Read configs
       id: config
