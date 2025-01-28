@@ -20,14 +20,14 @@ runs:
       shell: bash
       run: |
         echo "::group::Runner ARCH"
-        echo runner.arch
+        echo ${{ runner.arch }}
         echo "::endgroup::"
 
     - name: output runner os
       shell: bash
       run: |
         echo "::group::Runner OS"
-        echo runner.os
+        echo ${{ runner.os }}
         echo "::endgroup::"
 
     - name: Free Github Runner
