@@ -30,6 +30,13 @@ runs:
         echo ${{ runner.os }}
         echo "::endgroup::"
 
+    - name: output condition test
+      shell: bash
+      run: |
+        echo "::group::Condition Test"
+        echo ${{ runner.arch != "ARM64" }}
+        echo "::endgroup::"
+
     - name: Free Github Runner
       if: runner.RUNNER_ARCH != 'ARM64'
       uses: descriptinc/free-disk-space@main
