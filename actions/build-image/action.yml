@@ -16,27 +16,6 @@ runs:
         env | grep -i runner
         echo "::endgroup::"
 
-    - name: output runner arch
-      shell: bash
-      run: |
-        echo "::group::Runner ARCH"
-        echo ${{ runner.arch }}
-        echo "::endgroup::"
-
-    - name: output runner os
-      shell: bash
-      run: |
-        echo "::group::Runner OS"
-        echo ${{ runner.os }}
-        echo "::endgroup::"
-
-    - name: output condition test
-      shell: bash
-      run: |
-        echo "::group::Condition Test"
-        echo ${{ runner.arch != 'ARM64' }}
-        echo "::endgroup::"
-
     - name: Free Github Runner
       if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
