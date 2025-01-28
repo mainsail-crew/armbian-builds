@@ -34,11 +34,11 @@ runs:
       shell: bash
       run: |
         echo "::group::Condition Test"
-        echo ${{ runner.arch != "ARM64" }}
+        echo ${{ runner.arch != 'ARM64' }}
         echo "::endgroup::"
 
     - name: Free Github Runner
-      if: runner.RUNNER_ARCH != 'ARM64'
+      if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
       with:
         android: true
