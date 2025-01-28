@@ -12,6 +12,7 @@ runs:
     #- name: Runner prepare
     #  uses: ./actions/runner-prepare
     - name: Free Github Runner
+      if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
       with:
         android: true
