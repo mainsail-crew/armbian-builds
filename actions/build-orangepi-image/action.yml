@@ -11,7 +11,7 @@ runs:
   steps:
     #- name: Runner prepare
     #  uses: ./actions/runner-prepare
-    - name: Free Github Runner
+    - name: Free GitHub Runner
       if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
       with:

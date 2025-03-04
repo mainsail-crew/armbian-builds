@@ -16,7 +16,7 @@ runs:
         env | grep -i runner
         echo "::endgroup::"
 
-    - name: Free Github Runner
+    - name: Free GitHub Runner
       if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
       with:
