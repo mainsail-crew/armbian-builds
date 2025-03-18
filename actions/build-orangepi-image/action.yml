@@ -24,7 +24,8 @@ runs:
     - name: Install Required Packages
       shell: bash
       run: |
-        sudo apt-get install -y aria2 gpg
+        sudo apt-get update
+        sudo apt-get install -y aria2 gpg pv
 
     - name: Read configs
       id: config
