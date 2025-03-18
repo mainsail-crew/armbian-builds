@@ -1,6 +1,6 @@
 name: 'Fix FAT partition'
 author: 'Stefan Dej'
-description: 'Change partition type of FAT partition to 0b'
+description: 'Change partition type of FAT partition to 0c'
 
 runs:
   using: 'composite'
@@ -47,16 +47,16 @@ runs:
         echo "::endgroup::"
         echo "partition_index=${PARTITION_INDEX}" >> $GITHUB_OUTPUT
 
-    - name: Change partition type to 0b
+    - name: Change partition type to 0c
       if: success() && steps.check-disk.outputs.disk_label == 'dos' && steps.get-partition.outputs.partition_index != ''
       shell: bash
       working-directory: "./build/output/images/"
       run: |
-        echo "::group::Changing partition type to 0b"
+        echo "::group::Changing partition type to 0c"
         IMAGE_FILE=$(ls *.img)
         echo "Image file: ${IMAGE_FILE}"
         echo "Partition index: ${{ steps.get-partition.outputs.partition_index }}"
-        sfdisk --part-type "${IMAGE_FILE}" ${{ steps.get-partition.outputs.partition_index }} 0b
+        sfdisk --part-type "${IMAGE_FILE}" ${{ steps.get-partition.outputs.partition_index }} 0c
         echo "::endgroup::"
 
     - name: Show updated partition table
