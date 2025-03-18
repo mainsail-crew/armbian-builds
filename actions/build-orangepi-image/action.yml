@@ -83,7 +83,7 @@ runs:
             gsub(/^[[:space:]]*"|"[[:space:]]*$/, "")
             print $0
           }
-        }' ../scripts/general.sh))
+        }' ../build/scripts/general.sh))
         
         # Mirrors
         webseed() {
