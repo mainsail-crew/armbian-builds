@@ -1,0 +1,69 @@
+name: 'Fix FAT partition'
+author: 'Stefan Dej'
+description: 'Change partition type of FAT partition to 08'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Show partition table before
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Partition table of generated image"
+        fdisk -l *.img
+        echo "::endgroup::"
+
+    - name: Check disk label type
+      id: check-disk
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Checking disk label type"
+        DISK_LABEL=$(fdisk -l *.img | grep "Disklabel type:" | awk '{print $3}')
+        echo "Disk label type: ${DISK_LABEL}"
+        echo "::endgroup::"
+        echo "disk_label=${DISK_LABEL}" >> $GITHUB_OUTPUT
+
+    - name: Show partition table
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Partition table of generated image"
+        fdisk -l *.img
+        echo "::endgroup::"
+
+    - name: Get partition index with type 'ea'
+      id: get-partition
+      if: steps.check-disk.outputs.disk_label == 'dos'
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Finding partition with type 'ea'"
+        PARTITION_INDEX=$(fdisk -l *.img | grep -i "ea Linux extended" | awk '{print $1}' | grep -o '[0-9]*$' || echo "")
+        if [ -z "${PARTITION_INDEX}" ]; then
+          echo "No partition with type 'ea' found"
+        fi
+        echo "Found partition index: ${PARTITION_INDEX}"
+        echo "::endgroup::"
+        echo "partition_index=${PARTITION_INDEX}" >> $GITHUB_OUTPUT
+
+    - name: Change partition type to 0b
+      if: success() && steps.check-disk.outputs.disk_label == 'dos' && steps.get-partition.outputs.partition_index != ''
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Changing partition type to 0b"
+        IMAGE_FILE=$(ls *.img)
+        echo "Image file: ${IMAGE_FILE}"
+        echo "Partition index: ${{ steps.get-partition.outputs.partition_index }}"
+        sfdisk --part-type "${IMAGE_FILE}" ${{ steps.get-partition.outputs.partition_index }} 0b
+        echo "::endgroup::"
+
+    - name: Show updated partition table
+      if: steps.check-disk.outputs.disk_label == 'dos'
+      shell: bash
+      working-directory: "./build/output/images/"
+      run: |
+        echo "::group::Updated partition table"
+        fdisk -l *.img
+        echo "::endgroup::"

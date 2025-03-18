@@ -121,6 +121,9 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
+      - name: Fix FAT partition
+        uses: ./build-configs/actions/fix-fat-partition
+
       - name: Rename Files
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
@@ -190,6 +193,9 @@ jobs:
         uses: ./build-configs/actions/build-orangepi-image
         with:
           configfile: ${{ matrix.configfile }}
+
+      - name: Fix FAT partition
+        uses: ./build-configs/actions/fix-fat-partition
 
       - name: Rename Files
         run: |
