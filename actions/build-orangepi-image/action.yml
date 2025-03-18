@@ -58,11 +58,12 @@ runs:
       id: cache-toolchains
       uses: actions/cache@v4
       with:
-        path: toolchains
+        path: build/toolchains
         key: orangepi-toolchains-${{ hashFiles('scripts/general.sh') }}
 
     - name: Download Toolchains
       if: steps.cache-toolchains.outputs.cache-hit != 'true'
+      working-directory: ./build
       shell: bash
       run: |
         mkdir -p toolchains
@@ -83,7 +84,7 @@ runs:
             gsub(/^[[:space:]]*"|"[[:space:]]*$/, "")
             print $0
           }
-        }' ../build/scripts/general.sh))
+        }' ../scripts/general.sh))
         
         # Mirrors
         webseed() {
@@ -91,10 +92,16 @@ runs:
           local text=""
           local MIRRORS=(
             "https://os.mainsail.xyz/_toolchain"
-            "http://www.iplaystore.cn/"
             "https://mirrors.tuna.tsinghua.edu.cn/armbian-releases/_toolchain"
             "https://mirrors.bfsu.edu.cn/armbian-releases/_toolchain"
           )
+        
+          if [[ "${path}" =~ ^/ky ]]; then
+            MIRRORS=(
+              "https://os.mainsail.xyz/_toolchain"
+              "http://www.iplaystore.cn/"
+            )
+          fi
           
           for mirror in "${MIRRORS[@]}"; do
             text="${text} ${mirror}${path}"
@@ -164,13 +171,9 @@ runs:
           if [ "$success" = true ]; then
             # Extract based on file extension
             if [[ "$file" == *.tar.xz ]]; then
-              echo "Extracting $file (XZ)"
-              tar xf "$file" --xattrs --no-same-owner
-            elif [[ "$file" == *.tar.gz ]]; then
-              echo "Extracting $file (GZ)"
-              tar xzf "$file" --xattrs --no-same-owner
+              pv -p -b -r -c -N "[ Extracting ] $file" "$file" | xz -dc | tar xp --xattrs --no-same-owner --overwrite
             fi
-            touch "${file%.*}/.download-complete"
+            touch "${file//.tar.xz}/.download-complete"
             return 0
           else
             echo "Verification failed for $file"
@@ -193,7 +196,6 @@ runs:
       shell: bash
       run: |
         cd ./build
-        export ARMBIAN_CACHE_TOOLCHAIN_PATH=$GITHUB_WORKSPACE/toolchains
         ./build.sh settings
 
     - name: Fix userrights
