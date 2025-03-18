@@ -60,7 +60,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: build/toolchains
-        key: orangepi-toolchains-${{ hashFiles('scripts/general.sh') }}
+        key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}
 
     - name: Download Toolchains
       if: steps.cache-toolchains.outputs.cache-hit != 'true'
@@ -171,7 +171,7 @@ runs:
           
           if [ "$success" = true ]; then
             # Extract based on file extension
-            if [[ "$file" == *.tar.xz ]]; then
+			if [[ "$file" == *.tar.xz ]]; then
               pv -p -b -r -c -N "[ Extracting ] $file" "$file" | xz -dc | tar xp --xattrs --no-same-owner --overwrite
             fi
             touch "${file//.tar.xz}/.download-complete"
