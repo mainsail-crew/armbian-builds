@@ -21,6 +21,11 @@ runs:
         docker-images: true
         swap-storage: true
 
+    - name: Install Required Packages
+      shell: bash
+      run: |
+        sudo apt-get install -y aria2 gpg
+
     - name: Read configs
       id: config
       shell: bash
@@ -49,10 +54,146 @@ runs:
         cat ./build/userpatches/config-settings.conf
         echo "::endgroup::"
 
+    - name: Cache Toolchains
+      id: cache-toolchains
+      uses: actions/cache@v4
+      with:
+        path: toolchains
+        key: orangepi-toolchains-${{ hashFiles('scripts/general.sh') }}
+
+    - name: Download Toolchains
+      if: steps.cache-toolchains.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p toolchains
+        cd toolchains
+        
+        # GPG Setup
+        mkdir -p .gpg
+        chmod 700 .gpg
+        touch .gpg/gpg.conf
+        chmod 600 .gpg/gpg.conf
+        
+        # Import GPG keys
+        gpg --homedir .gpg --no-permission-warning --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8F427EAF
+        gpg --homedir .gpg --no-permission-warning --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9F0E78D5
+        
+        TOOLCHAINS=($(awk '/^[[:space:]]*local toolchains=\(/,/\)/ {
+          if ($0 ~ /".+"/) {
+            gsub(/^[[:space:]]*"|"[[:space:]]*$/, "")
+            print $0
+          }
+        }' ../scripts/general.sh))
+        
+        # Mirrors
+        webseed() {
+          local path=$1
+          local text=""
+          local MIRRORS=(
+            "https://os.mainsail.xyz/_toolchain"
+            "http://www.iplaystore.cn/"
+            "https://mirrors.tuna.tsinghua.edu.cn/armbian-releases/_toolchain"
+            "https://mirrors.bfsu.edu.cn/armbian-releases/_toolchain"
+          )
+          
+          for mirror in "${MIRRORS[@]}"; do
+            text="${text} ${mirror}${path}"
+          done
+          echo "${text:1}"
+        }
+        
+        # Download function with verification
+        download_and_verify() {
+          local file=$1
+          local localdir="$PWD"
+          local success=false
+          
+          # Try primary mirror first
+          local primary_mirror="https://os.mainsail.xyz/_toolchain"
+          
+          # Check if .asc exists
+          if ! timeout 10 curl --head --fail --silent "${primary_mirror}/${file}.asc"; then
+            echo "No signature file found for $file"
+            return 1
+          fi
+          
+          # Download .asc file using aria2c
+          echo "Downloading signature file for $file"
+          aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
+            --console-log-level=error --auto-file-renaming=false \
+            --continue=false --allow-overwrite=true \
+            --dir="${localdir}" \
+            "${primary_mirror}/${file}.asc" $(webseed "/${file}.asc") \
+            -o "${file}.asc"
+            
+          if [ $? -ne 0 ]; then
+            echo "Failed to download signature file for $file"
+            return 1
+          fi
+          
+          # Download main file using aria2c
+          echo "Downloading $file"
+          aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
+            --console-log-level=error --auto-file-renaming=false \
+            --continue=true --allow-overwrite=true \
+            --dir="${localdir}" \
+            "${primary_mirror}/${file}" $(webseed "/${file}") \
+            -o "${file}"
+            
+          if [ $? -ne 0 ]; then
+            echo "Failed to download $file"
+            return 1
+          fi
+          
+          # Verify signature
+          if [ -f "${file}.asc" ]; then
+            if grep -q 'BEGIN PGP SIGNATURE' "${file}.asc"; then
+              if gpg --homedir .gpg --no-permission-warning --verify \
+                --trust-model always -q "${file}.asc" 2>/dev/null; then
+                echo "GPG verification successful for $file"
+                success=true
+              fi
+            else
+              if md5sum -c --status "${file}.asc" 2>/dev/null; then
+                echo "MD5 verification successful for $file"
+                success=true
+              fi
+            fi
+          fi
+          
+          if [ "$success" = true ]; then
+            # Extract based on file extension
+            if [[ "$file" == *.tar.xz ]]; then
+              echo "Extracting $file (XZ)"
+              tar xf "$file" --xattrs --no-same-owner
+            elif [[ "$file" == *.tar.gz ]]; then
+              echo "Extracting $file (GZ)"
+              tar xzf "$file" --xattrs --no-same-owner
+            fi
+            touch "${file%.*}/.download-complete"
+            return 0
+          else
+            echo "Verification failed for $file"
+            return 1
+          fi
+        }
+        
+        # Download and verify all toolchains
+        for toolchain in "${TOOLCHAINS[@]}"; do
+          download_and_verify "$toolchain" || {
+            echo "Failed to process $toolchain"
+            exit 1
+          }
+        done
+        
+        # Cleanup downloaded archives
+        rm -f *.tar.* *.asc
+
     - name: Build Image
       shell: bash
       run: |
         cd ./build
+        export ARMBIAN_CACHE_TOOLCHAIN_PATH=$GITHUB_WORKSPACE/toolchains
         ./build.sh settings
 
     - name: Fix userrights
