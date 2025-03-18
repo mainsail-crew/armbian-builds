@@ -98,9 +98,6 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
-
       - name: Rename Files
         id: rename-files
         run: |
@@ -129,6 +126,9 @@ jobs:
           echo "::debug::Filename will be: ${IMAGE}"
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Fix FAT partition
+        uses: ./build-configs/actions/fix-fat-partition
 
       - name: Compressing Image
         run: |
@@ -185,9 +185,6 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
-
       - name: Rename Files
         id: rename-files
         run: |
@@ -214,6 +211,9 @@ jobs:
           echo "::debug::Filename will be: ${IMAGE}"
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Fix FAT partition
+        uses: ./build-configs/actions/fix-fat-partition
 
       - name: Compressing Image
         run: |
