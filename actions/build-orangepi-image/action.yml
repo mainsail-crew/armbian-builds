@@ -53,7 +53,6 @@ runs:
       shell: bash
       run: |
         cd ./build
-        export ARMBIAN_MIRROR="https://apt.armbian.com"
         ./build.sh settings
 
     - name: Fix userrights
