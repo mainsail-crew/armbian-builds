@@ -1,6 +1,6 @@
 name: 'Fix FAT partition'
 author: 'Stefan Dej'
-description: 'Change partition type of FAT partition to 08'
+description: 'Change partition type of FAT partition to 0b'
 
 runs:
   using: 'composite'
