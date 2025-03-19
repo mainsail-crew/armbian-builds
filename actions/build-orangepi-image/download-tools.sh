@@ -33,7 +33,7 @@ download_and_verify() {
   local primary_mirror="https://os.mainsail.xyz/_toolchain"
   
   # Check if .asc exists
-  if ! timeout 10 curl --head --fail --silent "${primary_mirror}/${file}.asc"; then
+  if ! timeout 10 curl --head --fail --silent "${primary_mirror}/${file}.asc" &>/dev/null; then
     echo "No signature file found for $file"
     return 1
   fi
