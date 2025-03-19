@@ -20,8 +20,7 @@ webseed() {
     urls+=("${mirror}${path}")
   done
 
-  # Join URLs with comma for aria2c
-  echo "${urls[*]}" | tr ' ' ','
+  echo "${urls[*]}"
 }
 
 # Download function with verification
@@ -35,7 +34,7 @@ download_and_verify() {
   if aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=false --allow-overwrite=true --dir="${localdir}" \
-    "$(webseed "/${file}.asc")" -o "${file}.asc"; then
+    $(webseed "/${file}.asc") -o "${file}.asc"; then
     echo "Signature file downloaded successfully"
   else
     echo "No signature file available, skipping verification"
@@ -47,7 +46,7 @@ download_and_verify() {
   aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=true --allow-overwrite=true --dir="${localdir}" \
-    "$(webseed "/${file}")" -o "${file}"
+    $(webseed "/${file}") -o "${file}"
 
   if [ $? -ne 0 ]; then
     echo "Failed to download $file"
