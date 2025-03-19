@@ -198,6 +198,13 @@ runs:
         # Cleanup downloaded archives
         rm -f *.tar.* *.asc
 
+    - name: Save Toolchains Cache
+      if: steps.cache-toolchains.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: build/toolchains
+        key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}
+
     - name: Build Image
       shell: bash
       run: |
