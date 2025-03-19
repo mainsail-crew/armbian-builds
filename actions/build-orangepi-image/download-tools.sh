@@ -6,8 +6,7 @@ webseed() {
   local text=""
   local MIRRORS=(
     "https://os.mainsail.xyz/_toolchain"
-    "https://mirrors.tuna.tsinghua.edu.cn/armbian-releases/_toolchain"
-    "https://mirrors.bfsu.edu.cn/armbian-releases/_toolchain"
+    "https://dl.armbian.com/_toolchain"
   )
 
   if [[ "${path}" =~ ^/ky ]]; then
