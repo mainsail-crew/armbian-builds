@@ -3,7 +3,7 @@
 # Mirrors
 webseed() {
   local path=$1
-  local text=""
+  local urls=()
   local MIRRORS=(
     "https://os.mainsail.xyz/_toolchain"
     "https://dl.armbian.com/_toolchain"
@@ -12,15 +12,16 @@ webseed() {
   if [[ "${path}" =~ ^/ky ]]; then
     MIRRORS=(
       "https://os.mainsail.xyz/_toolchain"
-      "http://www.iplaystore.cn/"
+      "http://www.iplaystore.cn"
     )
   fi
   
   for mirror in "${MIRRORS[@]}"; do
-    text="${text} ${mirror}${path}"
+    urls+=("${mirror}${path}")
   done
 
-  echo "${text:1}"
+  # Join URLs with comma for aria2c
+  echo "${urls[*]}" | tr ' ' ','
 }
 
 # Download function with verification
@@ -30,7 +31,7 @@ download_and_verify() {
   local success=false
   
   # Try to download .asc file using aria2c
-  echo "Trying to download signature file for $file"
+  echo "Trying to download signature file for $file.asc"
   if aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=false --allow-overwrite=true --dir="${localdir}" \
