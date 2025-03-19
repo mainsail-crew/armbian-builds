@@ -19,6 +19,7 @@ webseed() {
   for mirror in "${MIRRORS[@]}"; do
     text="${text} ${mirror}${path}"
   done
+
   echo "${text:1}"
 }
 
@@ -28,23 +29,12 @@ download_and_verify() {
   local localdir="$PWD"
   local success=false
   
-  # Try primary mirror first
-  local primary_mirror="https://os.mainsail.xyz/_toolchain"
-  
-  # Check if .asc exists
-  if ! timeout 10 curl --head --fail --silent "${primary_mirror}/${file}.asc" &>/dev/null; then
-    echo "No signature file found for $file"
-    return 1
-  fi
-  
   # Download .asc file using aria2c
   echo "Downloading signature file for $file"
   aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
-    --continue=false --allow-overwrite=true \
-    --dir="${localdir}" \
-    "${primary_mirror}/${file}.asc" $(webseed "/${file}.asc") \
-    -o "${file}.asc"
+    --continue=false --allow-overwrite=true --dir="${localdir}" \
+    "$(webseed "/${file}.asc")" -o "${file}.asc"
     
   if [ $? -ne 0 ]; then
     echo "Failed to download signature file for $file"
@@ -55,11 +45,9 @@ download_and_verify() {
   echo "Downloading $file"
   aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
-    --continue=true --allow-overwrite=true \
-    --dir="${localdir}" \
-    "${primary_mirror}/${file}" $(webseed "/${file}") \
-    -o "${file}"
-    
+    --continue=true --allow-overwrite=true --dir="${localdir}" \
+    "$(webseed "/${file}")" -o "${file}"
+
   if [ $? -ne 0 ]; then
     echo "Failed to download $file"
     return 1
