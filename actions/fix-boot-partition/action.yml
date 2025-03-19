@@ -1,36 +1,23 @@
-name: 'Fix FAT partition'
+name: 'Fix BOOT partition type'
 author: 'Stefan Dej'
-description: 'Change partition type of FAT partition to 0c'
+description: 'Change partition type of BOOT partition to 0c - W95 FAT32 (LBA)'
 
 runs:
   using: 'composite'
   steps:
     - name: Show partition table before
+      id: check-disk
       shell: bash
       working-directory: "./build/output/images/"
       run: |
         echo "::group::Partition table of generated image"
         fdisk -l *.img
         echo "::endgroup::"
-
-    - name: Check disk label type
-      id: check-disk
-      shell: bash
-      working-directory: "./build/output/images/"
-      run: |
         echo "::group::Checking disk label type"
         DISK_LABEL=$(fdisk -l *.img | grep "Disklabel type:" | awk '{print $3}')
         echo "Disk label type: ${DISK_LABEL}"
         echo "::endgroup::"
         echo "disk_label=${DISK_LABEL}" >> $GITHUB_OUTPUT
-
-    - name: Show partition table
-      shell: bash
-      working-directory: "./build/output/images/"
-      run: |
-        echo "::group::Partition table of generated image"
-        fdisk -l *.img
-        echo "::endgroup::"
 
     - name: Get partition index with type 'ea'
       id: get-partition

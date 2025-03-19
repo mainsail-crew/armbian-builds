@@ -121,8 +121,8 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Rename Files
         run: |
@@ -194,8 +194,8 @@ jobs:
         with:
           configfile: ${{ matrix.configfile }}
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Rename Files
         run: |

@@ -127,8 +127,8 @@ jobs:
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Compressing Image
         run: |
@@ -212,8 +212,8 @@ jobs:
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
-      - name: Fix FAT partition
-        uses: ./build-configs/actions/fix-fat-partition
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Compressing Image
         run: |
