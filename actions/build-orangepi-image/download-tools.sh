@@ -31,6 +31,7 @@ download_and_verify() {
   
   # Try to download .asc file using aria2c
   echo "Trying to download signature file for $file.asc"
+  # shellcheck disable=SC2046
   if aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=false --allow-overwrite=true --dir="${localdir}" \
@@ -43,6 +44,7 @@ download_and_verify() {
   
   # Download main file using aria2c
   echo "Downloading $file"
+  # shellcheck disable=SC2046
   aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=true --allow-overwrite=true --dir="${localdir}" \
