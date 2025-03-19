@@ -168,7 +168,7 @@ jobs:
   build-orangepi:
     name: OPI
     needs: [ setup ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
