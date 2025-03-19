@@ -35,7 +35,7 @@ runs:
         echo "partition_index=${PARTITION_INDEX}" >> $GITHUB_OUTPUT
 
     - name: Change partition type to 0c
-      if: success() && steps.check-disk.outputs.disk_label == 'dos' && steps.get-partition.outputs.partition_index != ''
+      if: steps.check-disk.outputs.disk_label == 'dos' && steps.get-partition.outputs.partition_index != ''
       shell: bash
       working-directory: "./build/output/images/"
       run: |
@@ -47,7 +47,7 @@ runs:
         echo "::endgroup::"
 
     - name: Show updated partition table
-      if: steps.check-disk.outputs.disk_label == 'dos'
+      if: steps.check-disk.outputs.disk_label == 'dos' && steps.get-partition.outputs.partition_index != ''
       shell: bash
       working-directory: "./build/output/images/"
       run: |
