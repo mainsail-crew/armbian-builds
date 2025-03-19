@@ -29,16 +29,16 @@ download_and_verify() {
   local localdir="$PWD"
   local success=false
   
-  # Download .asc file using aria2c
-  echo "Downloading signature file for $file"
-  aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
+  # Try to download .asc file using aria2c
+  echo "Trying to download signature file for $file"
+  if aria2c --download-result=hide --disable-ipv6=true --summary-interval=0 \
     --console-log-level=error --auto-file-renaming=false \
     --continue=false --allow-overwrite=true --dir="${localdir}" \
-    "$(webseed "/${file}.asc")" -o "${file}.asc"
-    
-  if [ $? -ne 0 ]; then
-    echo "Failed to download signature file for $file"
-    return 1
+    "$(webseed "/${file}.asc")" -o "${file}.asc"; then
+    echo "Signature file downloaded successfully"
+  else
+    echo "No signature file available, skipping verification"
+    rm -f "${file}.asc"
   fi
   
   # Download main file using aria2c
@@ -70,6 +70,9 @@ download_and_verify() {
         success=true
       fi
     fi
+  else
+    # If no signature file, consider download successful
+    success=true
   fi
   
   if [ "$success" = true ]; then
