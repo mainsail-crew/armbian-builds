@@ -9,8 +9,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    #- name: Runner prepare
-    #  uses: ./actions/runner-prepare
     - name: Free GitHub Runner
       if: runner.arch != 'ARM64'
       uses: descriptinc/free-disk-space@main
