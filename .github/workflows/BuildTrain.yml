@@ -128,6 +128,9 @@ jobs:
           mv *.img armbian-${{ matrix.configfile }}.img
           mv *.txt armbian-${{ matrix.configfile }}.txt
 
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
+
       - name: Compressing Image
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
@@ -196,6 +199,9 @@ jobs:
           WORKSPACE=$(echo ${{ github.workspace }})
           cd $WORKSPACE/build/output/images/
           mv */*.img ./orangepi-${{ matrix.configfile }}.img
+
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Compressing Image
         run: |

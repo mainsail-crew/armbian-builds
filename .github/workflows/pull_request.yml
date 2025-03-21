@@ -127,6 +127,9 @@ jobs:
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
+
       - name: Compressing Image
         run: |
           WORKSPACE=$(echo ${{ github.workspace }})
@@ -208,6 +211,9 @@ jobs:
           echo "::debug::Filename will be: ${IMAGE}"
           
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Fix BOOT partition
+        uses: ./build-configs/actions/fix-boot-partition
 
       - name: Compressing Image
         run: |
