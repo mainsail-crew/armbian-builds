@@ -20,6 +20,12 @@ runs:
         docker-images: true
         swap-storage: true
 
+    - name: Install Required Packages
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y aria2 gpg pv
+
     - name: Read configs
       id: config
       shell: bash
@@ -47,6 +53,60 @@ runs:
         echo "::group::Output config-settings.conf"
         cat ./build/userpatches/config-settings.conf
         echo "::endgroup::"
+
+    - name: Cache Toolchains
+      id: cache-toolchains
+      uses: actions/cache@v4
+      with:
+        path: build/toolchains
+        key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}
+
+    - name: Download Toolchains
+      if: steps.cache-toolchains.outputs.cache-hit != 'true'
+      working-directory: ./build
+      shell: bash
+      run: |
+        # Create toolchains directory
+        mkdir -p toolchains
+        cd toolchains
+        
+        # GPG Setup
+        mkdir -p .gpg
+        chmod 700 .gpg
+        touch .gpg/gpg.conf
+        chmod 600 .gpg/gpg.conf
+        
+        # Import GPG keys
+        gpg --homedir .gpg --no-permission-warning --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8F427EAF
+        gpg --homedir .gpg --no-permission-warning --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9F0E78D5
+        
+        TOOLCHAINS=($(awk '/^[[:space:]]*local toolchains=\(/,/\)/ {
+          if ($0 ~ /".+"/) {
+            gsub(/^[[:space:]]*"|"[[:space:]]*$/, "")
+            print $0
+          }
+        }' ../scripts/general.sh))
+        
+        # Source helper functions
+        source ../../build-configs/actions/build-orangepi-image/download-tools.sh
+        
+        # Download and verify all toolchains
+        for toolchain in "${TOOLCHAINS[@]}"; do
+          download_and_verify "$toolchain" || {
+            echo "Failed to process $toolchain"
+            exit 1
+          }
+        done
+        
+        # Cleanup downloaded archives
+        rm -f *.tar.* *.asc
+
+    - name: Save Toolchains Cache
+      if: steps.cache-toolchains.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: build/toolchains
+        key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}
 
     - name: Build Image
       shell: bash
