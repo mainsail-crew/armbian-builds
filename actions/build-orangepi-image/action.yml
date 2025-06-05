@@ -112,7 +112,7 @@ runs:
       shell: bash
       run: |
         cd ./build
-        NO_HOST_RELEASE_CHECK=yes ./build.sh settings
+        ./build.sh settings
 
     - name: Fix userrights
       shell: bash
