@@ -178,6 +178,7 @@ jobs:
   build-orangepi:
     name: OPI
     needs: [ setup ]
+    if: ${{ needs.setup.outputs.configfiles-orangepi != '[]' && needs.setup.outputs.configfiles-orangepi != '' }}
     runs-on: ubuntu-22.04-arm
     strategy:
       fail-fast: false
