@@ -1,3 +1,0 @@
-BOARD=orangepizero3
-MEM_TYPE=Others
-BRANCH=next
