@@ -39,6 +39,16 @@ jobs:
       - name: Create Matrix OrangePi
         id: set-matrix-orangepi
         run: |
+          DIR="${{ github.workspace }}/configs-orangepi"
+      
+          shopt -s nullglob
+          files=("$DIR"/board-*.conf)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No board-*.conf files found -> empty matrix."
+            echo "configfiles=[]" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          
           JSON=$(find ${{ github.workspace }}/configs-orangepi -type f -name "board-*.conf" -printf '%f\n' | sed 's#board-##;s#.conf##' | jq -R -s -c 'split("\n")[:-1]')
           echo "configfiles=${JSON}" >> $GITHUB_OUTPUT
           echo "::group::Matrix OrangePi"
@@ -177,6 +187,7 @@ jobs:
   build-orangepi:
     name: Orangepi
     needs: [ setup, release ]
+    if: ${{ needs.setup.outputs.configfiles-orangepi != '[]' && needs.setup.outputs.configfiles-orangepi != '' }}
     runs-on: ubuntu-22.04-arm
     strategy:
       fail-fast: false
