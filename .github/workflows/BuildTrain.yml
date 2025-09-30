@@ -250,6 +250,11 @@ jobs:
   finish:
     name: Finish BuildTrain
     needs: [release, build-armbian, build-orangepi]
+    if: |
+      !cancelled() &&
+      needs.release.result == 'success' &&
+      needs.build-armbian.result == 'success' &&
+      (needs.build-orangepi.result == 'success' || needs.build-orangepi.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Publish Release
