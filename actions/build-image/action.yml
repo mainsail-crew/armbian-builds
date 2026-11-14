@@ -31,7 +31,7 @@ runs:
         echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
 
     - name: Checkout armbian Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.armbian_repository }}

@@ -37,7 +37,7 @@ runs:
         echo "orangepi_branch=${ORANGEPI_BRANCH}" >> $GITHUB_OUTPUT
 
     - name: Checkout Custom Copy Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.orangepi_repository }}
@@ -56,7 +56,7 @@ runs:
 
     - name: Cache Toolchains
       id: cache-toolchains
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: build/toolchains
         key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}
@@ -103,7 +103,7 @@ runs:
 
     - name: Save Toolchains Cache
       if: steps.cache-toolchains.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v6
       with:
         path: build/toolchains
         key: orangepi-toolchains-${{ hashFiles('build/scripts/general.sh') }}

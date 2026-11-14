@@ -98,7 +98,7 @@ jobs:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: build-configs
@@ -158,19 +158,19 @@ jobs:
           sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Compressed Image
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
 
       - name: Upload Compressed Image Checksum
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Image Checksum
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256
@@ -179,14 +179,14 @@ jobs:
     name: OPI
     needs: [ setup ]
     if: ${{ needs.setup.outputs.configfiles-orangepi != '[]' && needs.setup.outputs.configfiles-orangepi != '' }}
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-26.04-arm
     strategy:
       fail-fast: false
       matrix:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: build-configs
@@ -244,19 +244,19 @@ jobs:
           sha256sum ${{ steps.rename-files.outputs.image }}.img.xz > ${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Compressed Image
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz
 
       - name: Upload Compressed Image Checksum
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.xz.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.xz.sha256
 
       - name: Upload Image Checksum
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.rename-files.outputs.image }}.img.sha256
           path: ${{ github.workspace }}/build/output/images/${{ steps.rename-files.outputs.image }}.img.sha256

@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Create Matrix Armbian
         id: set-matrix-armbian
@@ -67,7 +67,7 @@ jobs:
       tag_name: ${{ steps.time.outputs.time }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: build-configs
           fetch-depth: 0
@@ -82,7 +82,7 @@ jobs:
           echo "armbian_branch=${ARMBIAN_BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Checkout armbian Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           repository: ${{ steps.config.outputs.armbian_repository }}
@@ -104,7 +104,7 @@ jobs:
 
       - name: Create empty release
         id: release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ steps.armbian-version.outputs.version }}-${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
@@ -114,14 +114,14 @@ jobs:
   build-armbian:
     name: Armbian
     needs: [setup, release]
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-26.04-arm
     strategy:
       fail-fast: false
       matrix:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-armbian) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: build-configs
@@ -188,14 +188,14 @@ jobs:
     name: Orangepi
     needs: [ setup, release ]
     if: ${{ needs.setup.outputs.configfiles-orangepi != '[]' && needs.setup.outputs.configfiles-orangepi != '' }}
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-26.04-arm
     strategy:
       fail-fast: false
       matrix:
         configfile: ${{ fromJson(needs.setup.outputs.configfiles-orangepi) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: build-configs
@@ -271,7 +271,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete drafts
-        uses: hugo19941994/delete-draft-releases@v1.0.0
+        uses: hugo19941994/delete-draft-releases@v3.0.0
         with:
           threshold: 2d
         env:
