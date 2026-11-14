@@ -38,6 +38,20 @@ runs:
         ref: ${{ steps.config.outputs.armbian_branch }}
         path: build
 
+    - name: Patch kernel Makefile URL
+      shell: bash
+      run: |
+        # git.kernel.org is often unreachable from GitHub runners. Git access is redirected via
+        # 'insteadOf' in config-default.conf, but Armbian fetches the kernel Makefile via curl from
+        # git.kernel.org/.../plain/Makefile. Use the GitHub stable mirror (gregkh/linux) instead.
+        file=./build/lib/functions/general/git-ref2info.sh
+        perl -0pi -e 's{^(\t+)("https://git\.kernel\.org/pub/scm/linux/kernel/"\* \| "https://git\.ti\.com/"\*\))}{$1"https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git")\n$1\turl="https://raw.githubusercontent.com/gregkh/linux/\$\{sha1\}/Makefile"\n$1\t;;\n\n$1$2}m' "${file}"
+        if grep -q 'gregkh/linux' "${file}"; then
+          grep -n -B1 -A3 'gregkh/linux' "${file}"
+        else
+          echo "::warning::Could not patch kernel Makefile URL in ${file}, anchor not found"
+        fi
+
     - name: Create config-default.conf
       shell: bash
       run: |
