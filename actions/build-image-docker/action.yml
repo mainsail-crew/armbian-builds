@@ -18,7 +18,7 @@ runs:
         remove-android: 'true'
 
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         fetch-depth: 1
         path: build-configs
@@ -54,7 +54,7 @@ runs:
         echo "regional_mirror=${REGIONAL_MIRROR}" >> $GITHUB_ENV
 
     - name: Checkout armbian Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         fetch-depth: 1
         repository: ${{ steps.config.outputs.armbian_repository }}
